@@ -1,0 +1,8 @@
+alias usrc='cd $WM_PROJECT_USER_DIR/src'
+alias uapp='cd $WM_PROJECT_USER_DIR/applications'
+alias ulib='cd $FOAM_USER_LIBBIN'
+alias ufoam='cd $WM_PROJECT_USER_DIR'
+alias uutil='cd $WM_PROJECT_USER_DIR/applications/utilities'
+alias usol='cd $WM_PROJECT_USER_DIR/applications/solvers'
+alias runworkspace='cd $HOME/workspace/OpenFOAM/run'
+

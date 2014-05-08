@@ -1,0 +1,11 @@
+run/
+tutorial/
+platforms/
+.project
+.cproject
+lnInclude/
+linux64GccDPOpt/
+linux64GccDPDebug/
+*.dep
+*.o
+*~

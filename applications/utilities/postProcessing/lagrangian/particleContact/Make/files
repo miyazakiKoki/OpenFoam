@@ -1,0 +1,3 @@
+particleContact.C
+
+EXE = $(FOAM_APPBIN)/particleContact

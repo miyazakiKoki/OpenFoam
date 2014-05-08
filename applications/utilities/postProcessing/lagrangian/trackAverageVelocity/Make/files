@@ -1,0 +1,3 @@
+trackAverageVelocity.C
+
+EXE = $(FOAM_APPBIN)/trackAverageVelocity
