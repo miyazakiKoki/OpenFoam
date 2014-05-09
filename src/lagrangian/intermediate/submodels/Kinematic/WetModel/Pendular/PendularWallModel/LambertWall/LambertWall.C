@@ -56,7 +56,141 @@ void Foam::LambertWall<CloudType>::evaluatePendularWall
 
     vector rHat_PW = r_PW/(r_PW_mag + VSMALL);
 
-    //-----------------------------My part---------------------------//
+    //----------------------------My part2---------------------------//
+    //The capVolume is considered to form liquid bridge
+    if(Vtot > VSMALL)
+    {
+    //radius of cap p
+    List<scalar> pCapR(p.liquidPositionVectors().size());
+
+    forAll(pCapR,i)
+    {
+        pCapR[i]=pow(6*p.partVliq()[i]/(pi*tan(ca/2)*(3+pow(tan(ca/2),2))),0.33333);
+    }
+    
+    //calculating solid angle  cos(thetaC) pA and pB
+    List<scalar> cosThetaCp(p.liquidPositionVectors().size());
+    forAll(cosThetaCp,i)
+    {
+        cosThetaCp[i]=sqrt((p.d())*(p.d())-pCapR[i]*pCapR[i])/(p.d());
+    }
+
+    //calculating angle between liquid position and r_AB
+    List<scalar> cosTheta(p.liquidPositionVectors().size());
+
+    forAll(cosTheta,i)
+    {
+        cosTheta[i]= (-r_PW/(r_PW_mag+VSMALL))&(p.liquidPositionVectors()[i]/(mag(p.liquidPositionVectors()[i])+VSMALL));
+    }
+
+    //----------- counter array for distributing liquid volume----//
+    List<scalar> counter(p.liquidPositionVectors().size());
+
+    forAll(counter,i)
+    {
+        counter[i]=0;
+    }
+
+    //determing which part on the surface of particles form liquid bridge.
+    //calculating the volume of liquid used to form liquid bridge on each particle
+    //give 1 to counter array when forming liquid bridge at i's position of array
+    scalar VliqBrid;
+            
+    VliqBrid = 0;
+    forAll(cosThetaCp,i)
+    {
+        if(cosThetaCp[i]<cosTheta[i])
+        {
+            VliqBrid += p.partVliq()[i];
+            counter[i] = 1;
+        }
+    }
+
+    // calculate the minimum length between wet point and wall
+    List<scalar> lengthParticleWall(p.liquidPositionVectors().size());
+
+    forAll(lengthParticleWall,i)
+    {    
+        lengthParticleWall[i] = mag( site - p.liquidPositionVectors()[i] );
+    }
+    // find the minimum length from lengthParticleWall[i]
+    // l is the number of array which the value of minLength is stored
+    scalar minLength;
+    minLength = lengthParticleWall[0];
+    scalar l=0;
+                
+    forAll(lengthParticleWall,i)
+    {
+        if(lengthParticleWall[i] < minLength)
+        {
+            minLength = lengthParticleWall[i];
+            l = i;
+        }
+    }
+
+    //If the closest wet point is dry, then the liquid volume will be 0
+    //so the force fN_PW and ft_PW will be 0
+    //else, the volume of the liquid bridge will be p.partVliq[l]
+
+    scalar SrupWetP = (1+0.5*ca)*pow(VliqBrid, 1./3.);
+    if ( SrupWetP < minLength )
+    {
+
+        if(VliqBrid==0)
+        {
+            vector zero=vector::zero;
+            vector fN_PW = zero;
+            p.f() += fN_PW;
+            vector fT_PW = zero;
+            p.torque() += fT_PW;
+            Info << "No particle wall contact" << endl;
+        }
+        else
+        {
+        
+            // Normal force
+            scalar capMag =
+            4*mathematical::pi*pREff*st*cos(ca)/
+            (1+max(S, 0)*sqrt(mathematical::pi*pREff/VliqBrid));
+
+
+            scalar Svis = max(pREff*ms, S);
+
+            scalar etaN = 6*mathematical::pi*vis*pREff*pREff/Svis;
+
+            vector fN_PW = (-capMag - etaN*(U_PW & rHat_PW)) * rHat_PW;
+
+             p.f() += fN_PW;
+
+            vector UT_PW = U_PW - (U_PW & rHat_PW)*rHat_PW;
+
+            scalar etaT =
+                6*mathematical::pi*vis*pREff*(8./15.*log(pREff/Svis) + 0.9588);
+
+            vector fT_PW = -etaT * UT_PW;
+
+             p.f() += fT_PW;
+
+            p.torque() += (pREff*-rHat_PW) ^ fT_PW;
+            Info << " particle is in contact with vector "<<p.liquidPositionVectors()[l] << endl;
+            Info << " The volume of this liquid bridge is "<< VliqBrid << endl;
+        }
+    }
+    else
+    {
+        vector zero=vector::zero;
+        vector fN_PW = zero;
+        p.f() += fN_PW;
+        vector fT_PW = zero;
+        p.torque() += fT_PW;
+        Info << "No particle wall liquid Bridge" << endl;
+    }
+}
+
+
+    //-----------------------------My part1---------------------------//
+    //The closest wet point forms liquid bridge with wall
+/*
     // calculate the minimum length between wet point and wall
     List<scalar> lengthParticleWall(p.liquidPositionVectors().size());
 
@@ -137,12 +271,12 @@ void Foam::LambertWall<CloudType>::evaluatePendularWall
         Info << "No particle wall contact" << endl;
     }
 
-
+*/
 
 
     //-----------------------------------------------------------------//
-/*
-    // Normal force
+  //-------------------original------------------------------
+ /*   // Normal force
     scalar capMag =
         4*mathematical::pi*pREff*st*cos(ca)/
         (1+max(S, 0)*sqrt(mathematical::pi*pREff/Vtot));
@@ -165,6 +299,8 @@ void Foam::LambertWall<CloudType>::evaluatePendularWall
     p.f() += fT_PW;
 
     p.torque() += (pREff*-rHat_PW) ^ fT_PW;*/
+    //----------------------------------------------------------------
+
 }
 
 

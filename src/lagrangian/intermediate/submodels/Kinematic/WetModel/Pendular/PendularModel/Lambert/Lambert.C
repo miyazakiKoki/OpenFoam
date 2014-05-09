@@ -129,7 +129,7 @@ void Foam::Lambert<CloudType>::evaluatePendular
         //calculating solid angle  cos(thetaC) pA and pB
         List<scalar> cosThetaCpA(pA.liquidPositionVectors().size());
         List<scalar> cosThetaCpB(pB.liquidPositionVectors().size());
-        //probably the value inside sqrt is minus  causing error when calculating
+        //calculating cos thetaCp
         forAll(cosThetaCpA,i)
         {
             cosThetaCpA[i]=sqrt((pA.d())*(pA.d())-pACapR[i]*pACapR[i])/(pA.d());
