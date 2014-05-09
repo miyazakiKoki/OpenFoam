@@ -63,14 +63,13 @@ int main(int argc, char *argv[])
 
     // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
 
-    fileName vtkPath(runTime.path()/"VTK");
-    mkDir(vtkPath);
+    //fileName vtkPath(runTime.path()/"VTK");
+    //mkDir(vtkPath);
 
     Info<< "Scanning times to determine track data for cloud " << cloudName
         << nl << endl;
     Info<< "start Time="<<startTime<<endl;
     List<label> iCount(U.size(),0);
-
 
 
     labelList maxIds(Pstream::nProcs(), -1);

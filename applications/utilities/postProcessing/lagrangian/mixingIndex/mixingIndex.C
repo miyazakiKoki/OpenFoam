@@ -63,63 +63,79 @@ int main(int argc, char *argv[])
 
     // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
 
-    fileName vtkPath(runTime.path()/"VTK");
-    mkDir(vtkPath);
 
     Info<< "Scanning times to determine track data for cloud " << cloudName
         << nl << endl;
+    Info<< "start Time="<<startTime<<endl;
 
-    List<label> iCount(U.size(),0);
-    
-    List<scalar> totLiqVol(timeDirs.size(),0.0);
-
-   
+    List<scalar> totLiqV(timeDirs.size(),0.0);
+    List<scalar> Vave (timeDirs.size());
+    List<scalar> mixingIndex(timeDirs.size(),0.0);
+    scalar nCell;
+    nCell = U.size();
 
     labelList maxIds(Pstream::nProcs(), -1);
     forAll(timeDirs, timeI)
     {
+
         runTime.setTime(timeDirs[timeI], timeI);
         Info<< "Time = " << runTime.timeName() << endl;
-
-        Info<< "    Reading particle positions" << endl;
-        //passiveParticleCloud myCloud(mesh, cloudName);
-
-        basicWetCollidingCloud myCloud
-        (
-            cloudName,
-            rhoInf,
-            U,
-            mu,
-            g
-        );
-        label counter = 0;
-        Info<< "    Read " << returnReduce(myCloud.size(), sumOp<label>())
-            << " particles" << endl;
-
-        forAllConstIter(basicWetCollidingCloud, myCloud, iter)
+        if(runTime.value() >= startTime)
         {
-            totLiqVol[timeI] += iter().Vliq();
+            Info<< "    Reading particle positions" << endl;
+            //passiveParticleCloud myCloud(mesh, cloudName);
+
+            basicWetCollidingCloud myCloud
+            (
+                cloudName,
+                rhoInf,
+                U,
+                mu,
+                g
+            );
+
+            Info<< "    Read " << returnReduce(myCloud.size(), sumOp<label>())
+            << " particles" << endl;
+            List<scalar> VCell(U.size(),0.0);
+            forAllConstIter(basicWetCollidingCloud, myCloud, iter)
+            {
+                totLiqV[timeI] += iter().Vliq(); 
+                
+                label cellI = iter().cell();
+                VCell[cellI] += iter().Vliq(); 
+            }
+            Vave[timeI] = totLiqV[timeI]/nCell;
+            forAll(VCell,cellI)
+            {
+                mixingIndex[timeI] += pow(VCell[cellI]-Vave[timeI],2);
+            }
+            
+        }else{
+            Info<< "pass" << endl;
         }
     }
 
-    
+    forAll(mixingIndex,timeI)
+    {
+        mixingIndex[timeI] /= nCell;
+    }
+
+
+
     fileName rootName(runTime.path());
-    fileName fName("totLiqVol");
+    fileName fName("mixingIndex");
     OFstream os(rootName/fName);
     Info<< "Writing to the output file"<<endl;
 
-        forAll(totLiqVol,i)
-        {
-            os<<timeDirs[i]<<","<<totLiqVol[i]<<endl;
-
-                     
-        }
-
-    
-
+    forAll(mixingIndex,i)
+    {
+        os<<timeDirs[i]<<","<<mixingIndex[i]<<endl;               
+    }
 
     return 0;
 }
+
+
 
 
 // ************************************************************************* //

@@ -1,0 +1,3 @@
+mixingIndex.C
+
+EXE = $(FOAM_APPBIN)/mixingIndex
