@@ -183,15 +183,20 @@ bool Foam::WetParcel<ParcelType>::move
     List<vector> liquidPositionVelocitys(p.liquidPositionVectors().size());
     forAll(liquidPositionVectors_,i)
     {
-       p.liquidPositionVectors()[i]=p.liquidPositionVectors()[i]/mag(p.liquidPositionVectors()[i]);
+
        if(p.omega()==vector::zero)
        {
            p.liquidPositions()[i]=p.liquidPositionVectors()[i]*p.d()/2+p.position();
+           p.liquidPositionVectors()[i]=p.liquidPositionVectors()[i]/mag(p.liquidPositionVectors()[i]);
        }else
        {
            liquidPositionVelocitys[i]=(p.d()/2)*(p.omega()^p.liquidPositionVectors()[i]);
-           p.liquidPositions()[i] = liquidPositionVelocitys[i]*mesh.time().deltaT().value()+p.liquidPositionVectors()[i]+p.position();
+           p.liquidPositions()[i] = liquidPositionVelocitys[i]*mesh.time().deltaT().value()+p.liquidPositionVectors()[i]*p.d()/2+p.position();
            p.liquidPositionVectors()[i] = p.liquidPositions()[i]-p.position();
+           p.liquidPositionVectors()[i]=p.liquidPositionVectors()[i]/mag(p.liquidPositionVectors()[i]);
+
+            
+            
        }
     }
     p.Vliq()=0;

@@ -132,12 +132,12 @@ void Foam::Lambert<CloudType>::evaluatePendular
         //calculating cos thetaCp
         forAll(cosThetaCpA,i)
         {
-            cosThetaCpA[i]=sqrt((pA.d())*(pA.d())-pACapR[i]*pACapR[i])/(pA.d());
+            cosThetaCpA[i]=sqrt((pA.d())*(pA.d())-4*pACapR[i]*pACapR[i])/(pA.d());
         }
 
         forAll(cosThetaCpB,i)
         {
-            cosThetaCpB[i]=sqrt((pB.d())*(pB.d())-pBCapR[i]*pBCapR[i])/(pB.d() );
+            cosThetaCpB[i]=sqrt((pB.d())*(pB.d())-4*pBCapR[i]*pBCapR[i])/(pB.d() );
         }
 
 
@@ -429,12 +429,12 @@ void Foam::Lambert<CloudType>::evaluatePendular
                 // calculating the middle point between particle A and B
                 vector middlePointAB;
                 middlePointAB = ( pA.position() + pB.position() )/2;
-                // calculate the minimum length between middle point and liquidPositionVectors of particle A
-                List<scalar> lengthMidPointLiqPosA(pA.liquidPositionVectors().size());
+                // calculate the minimum length between middle point and liquidPositions of particle A
+                List<scalar> lengthMidPointLiqPosA(pA.liquidPositions().size());
 
                 forAll(lengthMidPointLiqPosA,i)
                 {    
-                    lengthMidPointLiqPosA[i] = mag( middlePointAB - pA.liquidPositionVectors()[i] );
+                    lengthMidPointLiqPosA[i] = mag( middlePointAB - pA.liquidPositions()[i] );
                 }
 
                 // find the minimum length from lengthMidPointLiqPosA[i]
@@ -453,12 +453,12 @@ void Foam::Lambert<CloudType>::evaluatePendular
                 }
 
 
-                // calculate the minimum length between middle point and liquidPositionVectors of particle B
-                List<scalar> lengthMidPointLiqPosB(pB.liquidPositionVectors().size());
+                // calculate the minimum length between middle point and liquidPositions of particle B
+                List<scalar> lengthMidPointLiqPosB(pB.liquidPositions().size());
 
                 forAll(lengthMidPointLiqPosB,i)
                 {    
-                    lengthMidPointLiqPosB[i] = mag( middlePointAB - pB.liquidPositionVectors()[i] );
+                    lengthMidPointLiqPosB[i] = mag( middlePointAB - pB.liquidPositions()[i] );
                 }
 
                 // find the minimum length from lengthMidPointLiqPosB[i]
