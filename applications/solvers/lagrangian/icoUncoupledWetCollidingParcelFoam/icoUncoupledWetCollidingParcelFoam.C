@@ -73,29 +73,31 @@ int main(int argc, char *argv[])
         runTime.write();
 
 
-/*
-        forAllIter(basicWetCollidingCloud,kinematicCloud,iter)
+
+        /*forAllIter(basicWetCollidingCloud,kinematicCloud,iter)
             {
                 //List<vector> liquidPosition;
-                //Info<<"liquidPosition of particle ["<<iter()<<"]"<<endl;
-                //forAll(liquidPosition,i)
-                //{
-                //    liquidPosition[i] = iter().liquidPositionVectors()[i];
-                //}
+                Info<<"liquidPosition of particle ["<<iter().position()<<"]"<<endl;
+                forAll(iter().liquidPositions(),i)
+                {
+                    Info << "liquidPosition[" << i << "]" << iter().liquidPositions()[i]<<endl;
+                    Info << "liquidPositionVectors[" << i << "]" << iter().liquidPositionVectors()[i]<<endl;
+                }
 
                 forAll(iter().liquidPositionVectors(),i)
                 {
                     Info << "liquidPositionVectors[" <<i<<"]" << iter().liquidPositionVectors()[i]<<endl;
                 } 
 
-                Info<<"liquidpositionvector of particle [1]"<<iter().liquidPositionVectors()<<endl;
-                Info<<"liquidPosition of particle [1]"<<iter().liquidPositions()<<endl;
-                Info<<"omega"<<iter().omega()<<endl;
-                Info<<"particlePosition"<<iter().position()<<endl;
-                Info<<"part Liquid"<<iter().partVliq()<<endl;
-                Info<<"total liquid"<<iter().Vliq()<<endl;
-            }
-    */
+                //Info<<"liquidpositionvector of particle [1]"<<iter().liquidPositionVectors()<<endl;
+                //Info<<"liquidPosition of particle [1]"<<iter().liquidPositions()<<endl;
+                //Info<<"omega"<<iter().omega()<<endl;
+                //Info<<"particlePosition"<<iter().position()<<endl;
+                //Info<<"part Liquid"<<iter().partVliq()<<endl;
+                //Info<<"total liquid"<<iter().Vliq()<<endl;
+                Info << "force acting is " << iter().f()<<endl;
+            }*/
+    
         
 
         Info<< "ExecutionTime = " << runTime.elapsedCpuTime() << " s"

@@ -1,7 +1,7 @@
 /*--------------------------------*- C++ -*----------------------------------*\
 | =========                 |                                                 |
 | \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox           |
-|  \\    /   O peration     | Version:  2.2.2                                 |
+|  \\    /   O peration     | Version:  2.2.0                                 |
 |   \\  /    A nd           | Web:      www.OpenFOAM.org                      |
 |    \\/     M anipulation  |                                                 |
 \*---------------------------------------------------------------------------*/
@@ -10,12 +10,26 @@ FoamFile
     version     2.0;
     format      ascii;
     class       dictionary;
-    object      particleTrackProperties;
+    location    "system";
+    object      setParticlePositionsPelletDict;
 }
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
 
-cloudName       kinematicCloud;
+positioningType        pellet;
 
-startTime       0;
+
+// ****** subDict ****** //
+autoPelletPositionSubDict
+{
+    particleDiameter	0.00156;
+    particleNumber        100;
+    radius                1.0;
+    length                1.0;
+    origin                (0 0 0);
+    trialNumber           100;
+    densityRadius         100;
+    densityTheta          100;
+    densityLength         100;
+}
 
 // ************************************************************************* //
