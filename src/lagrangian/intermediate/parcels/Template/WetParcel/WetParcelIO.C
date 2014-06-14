@@ -55,6 +55,8 @@ Foam::WetParcel<ParcelType>::WetParcel
         if (is.format() == IOstream::ASCII)
         {
             Vliq_ = readScalar(is);
+            partVliq_ = readList<scalar>(is);
+            liquidPositions_ = readList<vector>(is);
         }
         else
         {
@@ -62,6 +64,21 @@ Foam::WetParcel<ParcelType>::WetParcel
             (
                 reinterpret_cast<char*>(&Vliq_),
                 sizeof(Vliq_)
+            );
+            is.read
+            (
+                reinterpret_cast<char*>(&partVliq_),
+                sizeof(partVliq_)
+            );
+            is.read
+            (
+                reinterpret_cast<char*>(&liquidPositions_),
+                sizeof(liquidPositions_)
+            );
+            is.read
+            (
+                reinterpret_cast<char*>(&liquidPositionVectors_),
+                sizeof(liquidPositionVectors_)
             );
         }
     }
@@ -89,6 +106,16 @@ void Foam::WetParcel<ParcelType>::readFields(CloudType& c)
     IOField<scalar> Vliq(c.fieldIOobject("Vliq", IOobject::MUST_READ));
     c.checkFieldIOobject(c, Vliq);
 
+    IOField<scalarField>  partVliq(c.fieldIOobject("partVliq", IOobject::MUST_READ));
+    c.checkFieldIOobject(c, partVliq);
+
+    IOField<vectorField>  liquidPositions(c.fieldIOobject("liquidPositions", IOobject::MUST_READ));
+    c.checkFieldIOobject(c, liquidPositions);
+
+    IOField<vectorField>  liquidPositionVectors(c.fieldIOobject("liquidPositionVectors", IOobject::MUST_READ));
+    c.checkFieldIOobject(c, liquidPositionVectors);
+
+
     label i = 0;
 
     forAllIter(typename CloudType, c, iter)
@@ -96,6 +123,9 @@ void Foam::WetParcel<ParcelType>::readFields(CloudType& c)
         WetParcel<ParcelType>& p = iter();
 
         p.Vliq_ = Vliq[i];
+        p.partVliq_ = partVliq[i];
+        p.liquidPositions_ = liquidPositions[i];
+        p.liquidPositionVectors_ = liquidPositionVectors[i];
 
         i++;
     }
@@ -112,6 +142,9 @@ void Foam::WetParcel<ParcelType>::writeFields(const CloudType& c)
     label np =  c.size();
 
     IOField<scalar> Vliq(c.fieldIOobject("Vliq", IOobject::NO_READ), np);
+    IOField<scalarField>  partVliq(c.fieldIOobject("partVliq", IOobject::NO_READ), np);
+    IOField<vectorField>  liquidPositions(c.fieldIOobject("liquidPositions", IOobject::NO_READ), np);
+    IOField<vectorField>  liquidPositionVectors(c.fieldIOobject("liquidPositionVectors", IOobject::NO_READ), np);
 
     label i = 0;
 
@@ -120,11 +153,19 @@ void Foam::WetParcel<ParcelType>::writeFields(const CloudType& c)
         const WetParcel<ParcelType>& p = iter();
 
         Vliq[i] = p.Vliq();
+        partVliq[i] = p.partVliq();
+        liquidPositions[i] = p.liquidPositions();
+        liquidPositionVectors[i] = p.liquidPositionVectors();
+
+
 
         i++;
     }
 
     Vliq.write();
+    partVliq.write();
+    liquidPositions.write();
+    liquidPositionVectors.write();
 
 }
 
@@ -142,6 +183,12 @@ Foam::Ostream& Foam::operator<<
     {
         os  << static_cast<const ParcelType&>(p)
             << token::SPACE << p.Vliq();
+        os  << static_cast<const ParcelType&>(p)
+            << token::SPACE << p.partVliq();
+        os  << static_cast<const ParcelType&>(p)
+            << token::SPACE << p.liquidPositions();
+        os  << static_cast<const ParcelType&>(p)
+            << token::SPACE << p.liquidPositionVectors();
     }
     else
     {
@@ -150,6 +197,22 @@ Foam::Ostream& Foam::operator<<
         (
             reinterpret_cast<const char*>(&p.Vliq_),
             sizeof(p.Vliq())
+
+        );
+        os.write
+        (
+            reinterpret_cast<const char*>(&p.partVliq_),
+            sizeof(p.partVliq())
+        );
+        os.write
+        (
+            reinterpret_cast<const char*>(&p.liquidPositions_),
+            sizeof(p.liquidPositions())
+        );
+        os.write
+        (
+            reinterpret_cast<const char*>(&p.liquidPositionVectors_),
+            sizeof(p.liquidPositionVectors())
         );
     }
 

@@ -113,8 +113,8 @@ int main(int argc, char *argv[])
         scalar thetaMax = 360 * densityT;
         scalar rMin = 0*densityR;
         scalar rMax = radius * densityR;
-        scalar lMin = -length*densityL/2;
-        scalar lMax = length*densityL/2;
+        scalar lMin = -(length-particleDiameter)*densityL/2;
+        scalar lMax = (length-particleDiameter)*densityL/2;
 
         //dummy list to store particles in cylindrical coordinates x is r, y is theta, z is length
 
@@ -191,7 +191,6 @@ int main(int argc, char *argv[])
                 }
             }
         } 
-
         
 
         fileName rootName(runTime.path());
@@ -211,82 +210,7 @@ int main(int argc, char *argv[])
         }
 
 
-        /*
-        //the center of the cube is (0 0 0)//
-
-        //number of max particles in x direction//
-        label maxParticX = boundaryLengthX/particleDiameter;
-        //number of max particles in y direction//
-        label maxParticY = boundaryLengthY/particleDiameter;
-        //number of max particles in z direction//
-        label maxParticZ = boundaryLengthZ/particleDiameter;
-
-        //the first position of the particle//
-        scalar firstPositionX = -boundaryLengthX/2;
-        scalar firstPositionY = -boundaryLengthY/2;
-        scalar firstPositionZ = -boundaryLengthZ/2;
-
-        //space between the first (and the last) particle and boundary wall in x direction//
-        scalar spaceX = (boundaryLengthX-maxParticX*particleDiameter)/2;
-        //space between the first (and the last) particle and boundary wall in y direction//
-        scalar spaceY = (boundaryLengthY-maxParticY*particleDiameter)/2;
-        //space between the first (and the last) particle and boundary wall in z direction//
-        scalar spaceZ = (boundaryLengthZ-maxParticZ*particleDiameter)/2;
-
-        Info<<"number of max particles in x direction is "<<maxParticX<<endl;
-        Info<<"number of max particles in y direction is "<<maxParticY<<endl;
-        Info<<"number of max particles in z direction is "<<maxParticZ<<endl;
-
-
-        //Info << "runTime.rootPath(): " << runTime.rootPath() << endl;
-        //Info << "runTime.caseName(): " << runTime.caseName() << endl;
-        //Info << "runTime.path(): " << runTime.path() << endl;
-
-        fileName rootName(runTime.path());
-        fileName fName("particlePositions");   
-        OFstream os(rootName/fName);
-        Info<< "Writing to the output file"<<endl;
-
-
-        label i;
-        for (i =0; i< 30 ; i++)
-        {
-            Info << GetRandom(-3,3) << endl;
-        }
-
-        List<vector> veclist;
-        veclist.setSize(particleNumber);
-        //counter//
-        label l1=0;
-        label a;
-        label rr;
-        label rmax;
-        rmax = RAND_MAX;
-        a = random();
-        rr = random();
-        Info << "RAND_MAX=" <<RAND_MAX << endl;
-        Info << "the value of a is " << a << endl;
-        Info << "the value of rr is " << rr << endl;
-        for(label k=0;k<maxParticZ;k++)
-        {
-            for(label j=0;j<maxParticX;j++)
-            {
-                for(label i=0;i<maxParticY;i++)
-                {
-                    l1=l1+1;
-                    if(l1<=particleNumber)
-                    {
-                        veclist[l1-1].z()=spaceZ+particleDiameter/2+particleDiameter*k+firstPositionZ;
-                        veclist[l1-1].x()=spaceX+particleDiameter/2+particleDiameter*j+firstPositionX;
-                        veclist[l1-1].y()=spaceY+particleDiameter/2+particleDiameter*i+firstPositionY;
-
-                        os <<"("<<veclist[l1-1].x()<<"  "<<veclist[l1-1].y()<<"  "<<veclist[l1-1].z()<<")"<<endl;
-                    }
-                }
-            }
-        }
-
-        */
+        
         Info<< "End\n" << endl;
     }
     return 0;

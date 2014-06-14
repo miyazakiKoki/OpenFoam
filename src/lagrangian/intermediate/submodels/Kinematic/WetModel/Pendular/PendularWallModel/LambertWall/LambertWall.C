@@ -119,19 +119,19 @@ void Foam::LambertWall<CloudType>::evaluatePendularWall
             l = i;
         }
     }
-              Info << " minLength is " << minLength << endl;
+   //           Info << " minLength is " << minLength << endl;
 
    //         Info << " liquidPosition is " << p.liquidPositions()[l] << endl;
-              Info << " The volume of this liquid bridge is "<< VliqBrid << endl;
+   //           Info << " The volume of this liquid bridge is "<< VliqBrid << endl;
    //         Info << " site is " << site << endl;
-              Info << "cosThetaCp["<<l<<"]="<< cosThetaCp << endl;
-              Info << "cosTheta[l] is "<<cosTheta[l] << endl;
+   //           Info << "cosThetaCp["<<l<<"]="<< cosThetaCp << endl;
+   //           Info << "cosTheta[l] is "<<cosTheta[l] << endl;
     //If the closest wet point is dry, then the liquid volume will be 0
     //so the force fN_PW and ft_PW will be 0
     //else, the volume of the liquid bridge will be p.partVliq[l]
 
     scalar SrupWetP = (1+0.5*ca)*pow(VliqBrid, 1./3.);
-              Info << "rupture distance is " << SrupWetP << endl;
+              //Info << "rupture distance is " << SrupWetP << endl;
     if ( minLength < SrupWetP )
     {
 
@@ -142,17 +142,17 @@ void Foam::LambertWall<CloudType>::evaluatePendularWall
             p.f() += fN_PW;
             vector fT_PW = zero;
             p.torque() += fT_PW;
-            Info << "The volume of Vliq is 0" << endl;
+     //       Info << "The volume of Vliq is 0" << endl;
         }
         else
         {
         
             // Normal force
             scalar capMag =
-            400*mathematical::pi*pREff*st*cos(ca)/
+            4*mathematical::pi*pREff*st*cos(ca)/
             (1+max(S, 0)*sqrt(mathematical::pi*pREff/VliqBrid));
-Info << "the value of capMag is " << capMag << endl;
-    Info << " the value of overlapMag S is " << S << endl;
+//Info << "the value of capMag is " << capMag << endl;
+ //   Info << " the value of overlapMag S is " << S << endl;
 
             scalar Svis = max(pREff*ms, S);
 
@@ -172,11 +172,11 @@ Info << "the value of capMag is " << capMag << endl;
              p.f() += fT_PW;
 
             p.torque() += (pREff*-rHat_PW) ^ fT_PW;
-            Info << "-------------------------forming liquid bridge---------------" << endl;
-            Info << " the number of l is " << l << endl;
-            Info << " particle is in contact with liquidpositionvector "<<p.liquidPositionVectors()[l] << endl;
-            Info << " the liquid position when forming liquid bridge is " << p.liquidPositions()[l] << endl;
-            Info << " The volume of this liquid bridge is "<< VliqBrid << endl;
+    //        Info << "-------------------------forming liquid bridge---------------" << endl;
+   //         Info << " the number of l is " << l << endl;
+   //         Info << " particle is in contact with liquidpositionvector "<<p.liquidPositionVectors()[l] << endl;
+   //         Info << " the liquid position when forming liquid bridge is " << p.liquidPositions()[l] << endl;
+  //          Info << " The volume of this liquid bridge is "<< VliqBrid << endl;
 
         }
     }
@@ -187,7 +187,7 @@ Info << "the value of capMag is " << capMag << endl;
         p.f() += fN_PW;
         vector fT_PW = zero;
         p.torque() += fT_PW;
-        Info << "Too far to form liquid bridge" << endl;
+    //    Info << "Too far to form liquid bridge" << endl;
     }
 }
 
@@ -282,7 +282,7 @@ Info << "the value of capMag is " << capMag << endl;
   //-------------------original------------------------------
 /*    // Normal force
     scalar capMag =
-        400*mathematical::pi*pREff*st*cos(ca)/
+        4*mathematical::pi*pREff*st*cos(ca)/
         (1+max(S, 0)*sqrt(mathematical::pi*pREff/Vtot));
 
     Info << "the value of capMag is " << capMag << endl;

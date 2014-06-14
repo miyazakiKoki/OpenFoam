@@ -1,0 +1,73 @@
+/*--------------------------------*- C++ -*----------------------------------*\
+| =========                 |                                                 |
+| \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox           |
+|  \\    /   O peration     | Version:  2.2.0                                 |
+|   \\  /    A nd           | Web:      www.OpenFOAM.org                      |
+|    \\/     M anipulation  |                                                 |
+\*---------------------------------------------------------------------------*/
+FoamFile
+{
+    version     2.0;
+    format      ascii;
+    class       dictionary;
+    location    "system";
+    object      setParticlePositionsDict;
+}
+// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
+
+positioningType        packingCylinder;  //autoCubic detailCubic packingCubic randomCylinder packingCylinder
+
+
+// ****** subDict ****** //
+autoCubicPositionSubDict
+{
+    particleDiameter	0.00156;
+    particleNumber        100;
+    boundaryLengthX       1;
+    boundaryLengthY       1;
+    boundaryLengthZ       1;
+}
+
+detailCubicSubDict
+{
+    particleDiameter	0.00156;
+    particleNumber        100;
+    boundaryPointMin    (0 0 0);    //the minimum point of the box boundary to set particles
+    boundaryPointMax    (10 10 10);    //the max point of the box boundary to set particles
+    pileDirection       (1 0 0);    // pile direction (1 0 0) (0 1 0) (0 0 1)
+}
+
+packingCubicSubDict
+{
+    particleDiameter	0.004;
+    particleNumber        1000;
+    boundaryPointMin    (-0.04 -0.02 -0.02);    //the minimum point of the box boundary to set particles
+    boundaryPointMax    (0.04 0.02 0.02);    //the max point of the box boundary to set particles
+    pileDirection       (0 1 0);    // pile direction (1 0 0) (0 1 0) (0 0 1)
+}
+
+randomCylinderSubDict
+{
+    particleDiameter	0.00156;
+    particleNumber        100;
+    cylinderRadius          1;
+    cylinderLength          1;
+    origin               (0 0 0);
+    trialNumber          10000;
+    densityRadius        100;
+    densityDiameter      100;
+    densityTheta         100;
+    axisDirection        (1 0 0);    //
+}
+
+packingCylinderSubDict
+{
+    particleDiameter	0.004;
+    particleNumber        1000;
+    cylinderRadius      0.02;
+    cylinderLength      0.06;
+    axisDirection       (0 1 0);    // pile direction (1 0 0) (0 1 0) (0 0 1)
+    origin              (0 0 0);
+}
+
+// ************************************************************************* //
