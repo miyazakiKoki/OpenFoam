@@ -67,13 +67,18 @@ int main(int argc, char *argv[])
     Info<< "Scanning times to determine track data for cloud " << cloudName
         << nl << endl;
     Info<< "start Time="<<startTime<<endl;
+    Info<< "end Time="<<endTime<<endl;
 
-    List<scalar> totLiqV(timeDirs.size(),0.0);
-    List<scalar> Vave (timeDirs.size());
-    List<scalar> mixingIndex(timeDirs.size(),0.0);
-    List<scalar> S (timeDirs.size(),0.0);
-
-
+    //List<scalar> totLiqV(timeDirs.size(),0.0);
+    //List<scalar> Vave (timeDirs.size());
+    List<vector> wetPointPosition(timeDirs.size(),vector::zero);
+    List<vector> wetPointVector(timeDirs.size(),vector::zero);
+    List<vector> wetPointPosition1(timeDirs.size(),vector::zero);
+    List<vector> wetPointVector1(timeDirs.size(),vector::zero);
+    List<vector> wetPointPosition2(timeDirs.size(),vector::zero);
+    List<vector> wetPointVector2(timeDirs.size(),vector::zero);
+    //scalar nCell;
+    //nCell = U.size();
 
     labelList maxIds(Pstream::nProcs(), -1);
     forAll(timeDirs, timeI)
@@ -81,8 +86,8 @@ int main(int argc, char *argv[])
 
         runTime.setTime(timeDirs[timeI], timeI);
         Info<< "Time = " << runTime.timeName() << endl;
-        
-        if(timeI >= 1)
+        //if(runTime.value() >= startTime)
+        if( (runTime.value()>=startTime) && (runTime.value()<=endTime) )
         {
             Info<< "    Reading particle positions" << endl;
             //passiveParticleCloud myCloud(mesh, cloudName);
@@ -98,37 +103,38 @@ int main(int argc, char *argv[])
 
             Info<< "    Read " << returnReduce(myCloud.size(), sumOp<label>())
             << " particles" << endl;
-
-            Info<<"value of myCloud.size() is " << myCloud.size() << endl;
-            
-
+            //List<scalar> VCell(U.size(),0.0);
             forAllConstIter(basicWetCollidingCloud, myCloud, iter)
             {
-                totLiqV[timeI] += iter().Vliq(); 
-                Vave[timeI] = totLiqV[timeI]/myCloud.size();
-                S[timeI] += pow((iter().Vliq()-Vave[timeI]),2);
+                //totLiqV[timeI] += iter().Vliq(); 
+                wetPointPosition[timeI] = iter().liquidPositions()[0];
+                wetPointVector[timeI] = iter().liquidPositionVectors()[0];
+                wetPointPosition1[timeI] = iter().liquidPositions()[1];
+                wetPointVector1[timeI] = iter().liquidPositionVectors()[1];
+                wetPointPosition2[timeI] = iter().liquidPositions()[2];
+                wetPointVector2[timeI] = iter().liquidPositionVectors()[2];
+                //label cellI = iter().cell();
+                //VCell[cellI] += iter().Vliq(); 
             }
+
             
-            S[timeI] /= myCloud.size();
+        }else{
+            Info<< "pass" << endl;
         }
-            
     }
 
-    S[0] = S[1];
 
-    forAll(mixingIndex,timeI)
-    {
-        mixingIndex[timeI] = (S[0]-S[timeI])/S[0];
-    }
+
 
     fileName rootName(runTime.path());
-    fileName fName("mixingIndex");
+    fileName fName("trackWetPoint");
     OFstream os(rootName/fName);
     Info<< "Writing to the output file"<<endl;
 
-    forAll(mixingIndex,i)
+    forAll(wetPointPosition,i)
     {
-        os<<timeDirs[i]<<","<<mixingIndex[i]<<endl;               
+        os<<timeDirs[i]<<","<<"liquidPosition"<<","<<wetPointPosition[i]<<","<<"liquidPositionVector"<<","<<wetPointVector[i]<<","<<"liquidPosition1"<<","<<wetPointPosition1[i]<<","<<"liquidPositionVector1"<<","<<wetPointVector1[i]<<"liquidPosition2"<<","<<wetPointPosition2[i]<<","<<"liquidPositionVector2"<<","<<wetPointVector2[i]<<endl;
+       
     }
 
     return 0;

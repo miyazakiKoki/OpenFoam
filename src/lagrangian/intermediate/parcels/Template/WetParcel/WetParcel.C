@@ -77,7 +77,6 @@ bool Foam::WetParcel<ParcelType>::move
     const polyBoundaryMesh& pbMesh = mesh.boundaryMesh();
     const scalarField& V = mesh.cellVolumes();
 
-
     switch (td.part())
     {
         case TrackData::tpVelocityHalfStep:
@@ -137,6 +136,41 @@ bool Foam::WetParcel<ParcelType>::move
                     }
 
                     p.calc(td, dt, cellI);
+
+/*-----------------------*/
+                    p.liquidPositions().setSize(p.liquidPositionVectors().size()); 
+                    List<vector> liquidPositionVelocitys(p.liquidPositionVectors().size());
+                    forAll(liquidPositionVectors_,i)
+                    {
+
+                        if(p.omega()==vector::zero)
+                        {
+                            p.liquidPositions()[i]=p.liquidPositionVectors()[i]*p.d()/2+p.position();
+                            p.liquidPositionVectors()[i]=p.liquidPositionVectors()[i]/mag(p.liquidPositionVectors()[i]);
+                        }else
+                        {
+ /*          liquidPositionVelocitys[i]=(p.d()/2)*(p.omega()^p.liquidPositionVectors()[i]);
+           p.liquidPositions()[i] = liquidPositionVelocitys[i]*dt+p.liquidPositionVectors()[i]*p.d()/2+p.position();
+           p.liquidPositionVectors()[i] = p.liquidPositions()[i]-p.position();
+           p.liquidPositionVectors()[i]=p.liquidPositionVectors()[i]/mag(p.liquidPositionVectors()[i]);
+*/
+                            vector angle = dt*p.omega();
+                            p.liquidPositionVectors()[i]=p.liquidPositionVectors()[i]/mag(p.liquidPositionVectors()[i]);
+                            vector liquidPositionVectorsDummy = p.liquidPositionVectors()[i];     
+
+                            p.liquidPositionVectors()[i].x() = ( cos(angle.x())*cos(angle.y())*cos(angle.z())-sin(angle.x())*sin(angle.z()) )*liquidPositionVectorsDummy.x()*p.d()/2 + ( -cos(angle.x())*cos(angle.y())*sin(angle.z())-sin(angle.x())*cos(angle.z()) )*liquidPositionVectorsDummy.y()*p.d()/2 + cos(angle.x())*sin(angle.y())*liquidPositionVectorsDummy.z()*p.d()/2;
+           
+                            p.liquidPositionVectors()[i].y() = ( sin(angle.x())*cos(angle.y())*cos(angle.z())+cos(angle.x())*sin(angle.z()) )*liquidPositionVectorsDummy.x()*p.d()/2 + ( -sin(angle.x())*cos(angle.y())*sin(angle.z())+cos(angle.x())*cos(angle.z()) )*liquidPositionVectorsDummy.y()*p.d()/2 + sin(angle.x())*sin(angle.y())*liquidPositionVectorsDummy.z()*p.d()/2;
+
+                            p.liquidPositionVectors()[i].z() = -sin(angle.y())*cos(angle.z())*liquidPositionVectorsDummy.x()*p.d()/2 + sin(angle.y())*sin(angle.z())*liquidPositionVectorsDummy.y()*p.d()/2 + cos(angle.y())*liquidPositionVectorsDummy.z()*p.d()/2;
+
+                            p.liquidPositions()[i] = p.liquidPositionVectors()[i] + p.position();
+           
+                            p.liquidPositionVectors()[i]=p.liquidPositionVectors()[i]/mag(p.liquidPositionVectors()[i]);
+            
+                       }
+                   }
+/*-----------------------*/
                 }
 
                 if (p.onBoundary() && td.keepParticle)
@@ -179,26 +213,6 @@ bool Foam::WetParcel<ParcelType>::move
         }
     }
 
-    p.liquidPositions().setSize(p.liquidPositionVectors().size()); 
-    List<vector> liquidPositionVelocitys(p.liquidPositionVectors().size());
-    forAll(liquidPositionVectors_,i)
-    {
-
-       if(p.omega()==vector::zero)
-       {
-           p.liquidPositions()[i]=p.liquidPositionVectors()[i]*p.d()/2+p.position();
-           p.liquidPositionVectors()[i]=p.liquidPositionVectors()[i]/mag(p.liquidPositionVectors()[i]);
-       }else
-       {
-           liquidPositionVelocitys[i]=(p.d()/2)*(p.omega()^p.liquidPositionVectors()[i]);
-           p.liquidPositions()[i] = liquidPositionVelocitys[i]*mesh.time().deltaT().value()+p.liquidPositionVectors()[i]*p.d()/2+p.position();
-           p.liquidPositionVectors()[i] = p.liquidPositions()[i]-p.position();
-           p.liquidPositionVectors()[i]=p.liquidPositionVectors()[i]/mag(p.liquidPositionVectors()[i]);
-
-            
-            
-       }
-    }
     p.Vliq()=0;
     forAll(partVliq_,i)
     {

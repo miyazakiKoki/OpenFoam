@@ -71,9 +71,8 @@ int main(int argc, char *argv[])
     List<scalar> totLiqV(timeDirs.size(),0.0);
     List<scalar> Vave (timeDirs.size());
     List<scalar> mixingIndex(timeDirs.size(),0.0);
-    List<scalar> S (timeDirs.size(),0.0);
-
-
+    scalar nCell;
+    nCell = U.size();
 
     labelList maxIds(Pstream::nProcs(), -1);
     forAll(timeDirs, timeI)
@@ -81,8 +80,7 @@ int main(int argc, char *argv[])
 
         runTime.setTime(timeDirs[timeI], timeI);
         Info<< "Time = " << runTime.timeName() << endl;
-        
-        if(timeI >= 1)
+        if(runTime.value() >= startTime)
         {
             Info<< "    Reading particle positions" << endl;
             //passiveParticleCloud myCloud(mesh, cloudName);
@@ -98,28 +96,31 @@ int main(int argc, char *argv[])
 
             Info<< "    Read " << returnReduce(myCloud.size(), sumOp<label>())
             << " particles" << endl;
-
-            Info<<"value of myCloud.size() is " << myCloud.size() << endl;
-            
-
+            List<scalar> VCell(U.size(),0.0);
             forAllConstIter(basicWetCollidingCloud, myCloud, iter)
             {
                 totLiqV[timeI] += iter().Vliq(); 
-                Vave[timeI] = totLiqV[timeI]/myCloud.size();
-                S[timeI] += pow((iter().Vliq()-Vave[timeI]),2);
+                
+                label cellI = iter().cell();
+                VCell[cellI] += iter().Vliq(); 
+            }
+            Vave[timeI] = totLiqV[timeI]/nCell;
+            forAll(VCell,cellI)
+            {
+                mixingIndex[timeI] += pow(VCell[cellI]-Vave[timeI],2);
             }
             
-            S[timeI] /= myCloud.size();
+        }else{
+            Info<< "pass" << endl;
         }
-            
     }
-
-    S[0] = S[1];
 
     forAll(mixingIndex,timeI)
     {
-        mixingIndex[timeI] = (S[0]-S[timeI])/S[0];
+        mixingIndex[timeI] /= nCell;
     }
+
+
 
     fileName rootName(runTime.path());
     fileName fName("mixingIndex");
