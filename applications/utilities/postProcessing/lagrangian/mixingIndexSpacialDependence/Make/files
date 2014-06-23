@@ -1,0 +1,3 @@
+mixingIndexSpacialDependence.C
+
+EXE = $(FOAM_APPBIN)/mixingIndexSpacialDependence
