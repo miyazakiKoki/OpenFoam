@@ -162,7 +162,8 @@ void Foam::LambertWall<CloudType>::evaluatePendularWall
 
              p.f() += fN_PW;
 
-            vector UT_PW = U_PW - (U_PW & rHat_PW)*rHat_PW;
+            vector UT_PW = U_PW - (U_PW & rHat_PW)*rHat_PW
+                         - ((pREff*p.omega()) ^ rHat_PW);
 
             scalar etaT =
                 6*mathematical::pi*vis*pREff*(8./15.*log(pREff/Svis) + 0.9588);

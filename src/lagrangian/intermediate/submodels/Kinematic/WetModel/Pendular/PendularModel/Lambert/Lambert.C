@@ -304,7 +304,9 @@ void Foam::Lambert<CloudType>::evaluatePendular
                 pA.f() += fN_AB;
                 pB.f() += -fN_AB;
 
-                vector UT_AB = U_AB - (U_AB & rHat_AB)*rHat_AB;
+                vector UT_AB = U_AB - (U_AB & rHat_AB)*rHat_AB
+                         - ((0.5*(dAEff*pA.omega() + dBEff*pB.omega()))
+                           ^ rHat_AB);
 
                 scalar etaT =
                     6*mathematical::pi*vis*R*(8./15.*log(R/Svis) + 0.9588);
