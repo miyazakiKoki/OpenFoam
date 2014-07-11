@@ -54,8 +54,8 @@ randomCylinderSubDict
     cylinderLength          1;
     origin               (0 0 0);
     trialNumber          10000;
-    densityRadius        100;
-    densityDiameter      100;
+    densityRadius        100;        // Larger so that the value of cylinderRadius*densityRadius ga seisuu ni naruyouni
+    densityLength      100;          // Larger so that the value of cylinderLength*densityLength ga seisuu ni naruyouni
     densityTheta         100;
     axisDirection        (1 0 0);    //
 }

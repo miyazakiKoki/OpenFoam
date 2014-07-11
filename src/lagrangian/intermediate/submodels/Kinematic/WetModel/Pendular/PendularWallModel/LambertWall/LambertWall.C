@@ -173,7 +173,7 @@ void Foam::LambertWall<CloudType>::evaluatePendularWall
              p.f() += fT_PW;
 
             p.torque() += (pREff*-rHat_PW) ^ fT_PW;
-    //        Info << "-------------------------forming liquid bridge---------------" << endl;
+            Info << "-------------------------forming liquid bridge---------------" << endl;
    //         Info << " the number of l is " << l << endl;
    //         Info << " particle is in contact with liquidpositionvector "<<p.liquidPositionVectors()[l] << endl;
    //         Info << " the liquid position when forming liquid bridge is " << p.liquidPositions()[l] << endl;
@@ -281,8 +281,8 @@ void Foam::LambertWall<CloudType>::evaluatePendularWall
 
     //-----------------------------------------------------------------//
   //-------------------original------------------------------
-/*    // Normal force
-    scalar capMag =
+    // Normal force
+  /*  scalar capMag =
         4*mathematical::pi*pREff*st*cos(ca)/
         (1+max(S, 0)*sqrt(mathematical::pi*pREff/Vtot));
 
@@ -298,7 +298,8 @@ void Foam::LambertWall<CloudType>::evaluatePendularWall
 
     p.f() += fN_PW;
 
-    vector UT_PW = U_PW - (U_PW & rHat_PW)*rHat_PW;
+    vector UT_PW = U_PW - (U_PW & rHat_PW)*rHat_PW
+                  - ((pREff*p.omega()) ^ rHat_PW);
 
     scalar etaT =
         6*mathematical::pi*vis*pREff*(8./15.*log(pREff/Svis) + 0.9588);

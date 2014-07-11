@@ -29,12 +29,19 @@ License
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
 
 #include "StationaryWallLocalSpringSliderDashpot.H"
+#include "PairSpringSliderDashpotRolling.H"
+#include "WallSpringSliderDashpotRolling.H"
+#include "WallLocalSpringSliderDashpotRolling.H"
 
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
 
 #define makeUserDefinedParcelCollisionModels(CloudType)                       \
                                                                               \
-    makeWallModelType(StationaryWallLocalSpringSliderDashpot, CloudType);
+    makePairModelType(PairSpringSliderDashpotRolling, CloudType);             \
+                                                                              \
+    makeWallModelType(StationaryWallLocalSpringSliderDashpot, CloudType);     \
+    makeWallModelType(WallSpringSliderDashpotRolling, CloudType);             \
+    makeWallModelType(WallLocalSpringSliderDashpotRolling, CloudType);
 
 
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
