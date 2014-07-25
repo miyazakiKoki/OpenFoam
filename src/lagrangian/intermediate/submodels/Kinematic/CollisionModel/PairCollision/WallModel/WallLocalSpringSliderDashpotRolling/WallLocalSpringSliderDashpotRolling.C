@@ -89,6 +89,7 @@ void Foam::WallLocalSpringSliderDashpotRolling<CloudType>::evaluateWall
     scalar alpha = alpha_[wPI];
     scalar b = b_[wPI];
     scalar mu = mu_[wPI];
+    scalar muR = muR_[wPI];
     scalar cohesionEnergyDensity = cohesionEnergyDensity_[wPI];
     cohesion = cohesion && cohesion_[wPI];
 
@@ -163,7 +164,11 @@ void Foam::WallLocalSpringSliderDashpotRolling<CloudType>::evaluateWall
 
         p.f() += fT_PW;
 
-        p.torque() += (pREff*-rHat_PW) ^ fT_PW;
+        //------------------my part-----------------------------
+        // rolling friction added to the torque
+
+        p.torque() += ( ( (pREff*-rHat_PW) ^ fT_PW ) - muR*mag(fN_PW)*pREff*p.omega()/(mag(p.omega())+VSMALL));
+        //p.torque() += (pREff*-rHat_PW) ^ fT_PW;
     }
 }
 
@@ -183,6 +188,7 @@ Foam::WallLocalSpringSliderDashpotRolling<CloudType>::WallLocalSpringSliderDashp
     alpha_(),
     b_(),
     mu_(),
+    muR_(),
     cohesionEnergyDensity_(),
     cohesion_(),
     patchMap_(),
@@ -229,6 +235,7 @@ Foam::WallLocalSpringSliderDashpotRolling<CloudType>::WallLocalSpringSliderDashp
     alpha_.setSize(nWallPatches);
     b_.setSize(nWallPatches);
     mu_.setSize(nWallPatches);
+    muR_.setSize(nWallPatches);
     cohesionEnergyDensity_.setSize(nWallPatches);
     cohesion_.setSize(nWallPatches);
 
@@ -256,6 +263,8 @@ Foam::WallLocalSpringSliderDashpotRolling<CloudType>::WallLocalSpringSliderDashp
         b_[wPI] = readScalar(patchCoeffDict.lookup("b"));
 
         mu_[wPI] = readScalar(patchCoeffDict.lookup("mu"));
+
+        muR_[wPI] = readScalar(patchCoeffDict.lookup("muR"));
 
         cohesionEnergyDensity_[wPI] = readScalar
         (
