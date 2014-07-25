@@ -150,7 +150,12 @@ void Foam::WallSpringSliderDashpotRolling<CloudType>::evaluateWall
 
         p.f() += fT_PW;
 
-        p.torque() += (pREff*-rHat_PW) ^ fT_PW;
+        //-----------------------------------my Part--------------------------------
+        // rolling friction added to the torque
+
+        p.torque() += ( ( (pREff*-rHat_PW) ^ fT_PW ) - muR_*mag(fN_PW)*pREff*p.omega()/(mag(p.omega())+VSMALL));
+
+        //p.torque() += (pREff*-rHat_PW) ^ fT_PW;
     }
 }
 
@@ -170,6 +175,7 @@ Foam::WallSpringSliderDashpotRolling<CloudType>::WallSpringSliderDashpotRolling
     alpha_(readScalar(this->coeffDict().lookup("alpha"))),
     b_(readScalar(this->coeffDict().lookup("b"))),
     mu_(readScalar(this->coeffDict().lookup("mu"))),
+    muR_(readScalar(this->coeffDict().lookup("muR"))),
     cohesionEnergyDensity_
     (
         readScalar(this->coeffDict().lookup("cohesionEnergyDensity"))

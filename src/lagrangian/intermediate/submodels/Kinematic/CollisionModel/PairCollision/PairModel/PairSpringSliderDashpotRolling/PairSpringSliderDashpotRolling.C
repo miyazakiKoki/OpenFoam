@@ -92,6 +92,7 @@ Foam::PairSpringSliderDashpotRolling<CloudType>::PairSpringSliderDashpotRolling
     alpha_(readScalar(this->coeffDict().lookup("alpha"))),
     b_(readScalar(this->coeffDict().lookup("b"))),
     mu_(readScalar(this->coeffDict().lookup("mu"))),
+    muR_(readScalar(this->coeffDict().lookup("muR"))),
     cohesionEnergyDensity_
     (
         readScalar(this->coeffDict().lookup("cohesionEnergyDensity"))
@@ -285,8 +286,9 @@ void Foam::PairSpringSliderDashpotRolling<CloudType>::evaluatePair
             pA.f() += fT_AB;
             pB.f() += -fT_AB;
 
-            pA.torque() += (dAEff/2*-rHat_AB) ^ fT_AB;
-            pB.torque() += (dBEff/2*rHat_AB) ^ -fT_AB;
+            pA.torque() +=( ( (dAEff/2*-rHat_AB) ^ fT_AB ) - muR_*mag(fN_AB)*dAEff/2*pA.omega()/(mag(pA.omega())+VSMALL) );
+            pB.torque() +=( ( (dBEff/2*rHat_AB) ^ -fT_AB ) - muR_*mag(fN_AB)*dBEff/2*pB.omega()/(mag(pB.omega())+VSMALL));
+
         }
     }
 }

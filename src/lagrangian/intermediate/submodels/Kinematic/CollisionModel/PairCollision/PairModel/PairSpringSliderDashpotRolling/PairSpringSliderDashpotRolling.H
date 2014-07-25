@@ -68,6 +68,9 @@ class PairSpringSliderDashpotRolling
         //- Coefficient of friction in for tangential sliding
         scalar mu_;
 
+        //- Coefficient of Rolling friction
+        scalar muR_;
+
         //- Cohesion energy density [J/m^3]
         scalar cohesionEnergyDensity_;
 
