@@ -34,6 +34,7 @@ License
 #include "NoPendular.H"
 #include "Lambert.H"
 #include "LambertDispersion.H"
+#include "LambertDispersionNoWetP.H"
 
 #include "NoPendularWall.H"
 #include "LambertWall.H"
@@ -51,6 +52,7 @@ License
     makePendularModelType(NoPendular, CloudType);                             \
     makePendularModelType(Lambert, CloudType);                                \
     makePendularModelType(LambertDispersion, CloudType);                      \
+    makePendularModelType(LambertDispersionNoWetP, CloudType);                \
                                                                               \
     makePendularWallModel(CloudType);                                         \
     makePendularWallModelType(NoPendularWall, CloudType);                     \
