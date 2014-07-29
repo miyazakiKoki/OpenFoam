@@ -152,9 +152,22 @@ void Foam::LambertDispersionNoWetP<CloudType>::evaluatePendular
             pA.torque() += (dAEff/2*-rHat_AB) ^ fT_AB;
             pB.torque() += (dBEff/2*rHat_AB) ^ -fT_AB;
 
+            // p.Vliq is the sum of p.partVliq (see wetparcel.C). So the value of p.Vliq does not change even if p.Vliq is changed here
+            // For simplicity, p.Vliq is distributed to each wet point
             pA.Vliq() = pA.Vliq() - pA.Vliq()*lf + Vtot/2;
             pB.Vliq() = pB.Vliq() - pB.Vliq()*lf + Vtot/2;
 
+            List<scalar> counterA(pA.liquidPositionVectors().size());
+            List<scalar> counterB(pA.liquidPositionVectors().size());
+
+            forAll(counterA,i)
+            {
+               	 pA.partVliq()[i] = pA.Vliq()/pA.partVliq().size();
+            }
+            forAll(counterB,i)
+            {
+                 pB.partVliq()[i] = pB.Vliq()/pB.partVliq().size();
+            }
 
         }
     }
