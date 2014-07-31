@@ -23,12 +23,12 @@ License
 
 \*---------------------------------------------------------------------------*/
 
-#include "LambertWallDispersion.H"
+#include "LambertWallNearestPoint.H"
 
 // * * * * * * * * * * * * * Private Member Functions  * * * * * * * * * * * //
 
 template<class CloudType>
-void Foam::LambertWallDispersion<CloudType>::evaluatePendularWall
+void Foam::LambertWallNearestPoint<CloudType>::evaluatePendularWall
 (
     typename CloudType::parcelType& p,
     const point& site,
@@ -56,144 +56,9 @@ void Foam::LambertWallDispersion<CloudType>::evaluatePendularWall
 
     vector rHat_PW = r_PW/(r_PW_mag + VSMALL);
 
-    //----------------------------My part2---------------------------//
-    //The capVolume is considered to form liquid bridge
-    if(Vtot > VSMALL)
-    {
-    //radius of cap p
-    List<scalar> pCapR(p.liquidPositionVectors().size());
 
-    forAll(pCapR,i)
-    {
-        pCapR[i]=pow(6*p.partVliq()[i]/(pi*tan(ca/2)*(3+pow(tan(ca/2),2))),0.33333);
-    }
-
-    //calculating solid angle  cos(thetaC) pA and pB
-    List<scalar> cosThetaCp(p.liquidPositions().size());
-    forAll(cosThetaCp,i)
-    {
-        cosThetaCp[i]=sqrt((p.d())*(p.d())-4*pCapR[i]*pCapR[i])/(p.d());
-    }
-
-    //calculating angle between liquid position and r_AB
-    List<scalar> cosTheta(p.liquidPositionVectors().size());
-
-    forAll(cosTheta,i)
-    {
-        cosTheta[i]= (-r_PW/(r_PW_mag+VSMALL))&(p.liquidPositionVectors()[i]/(mag(p.liquidPositionVectors()[i])+VSMALL));
-    }
-
-
-    //determing which part on the surface of particles form liquid bridge.
-    //calculating the volume of liquid used to form liquid bridge on each particle
-    //give 1 to counter array when forming liquid bridge at i's position of array
-    scalar VliqBrid;
-            
-    VliqBrid = 0;
-    forAll(cosThetaCp,i)
-    {
-        if(cosThetaCp[i]<cosTheta[i])
-        {
-            VliqBrid += p.partVliq()[i];
-        }
-    }
-
-    // calculate the minimum length between wet point and wall
-    List<scalar> lengthParticleWall(p.liquidPositions().size());
-
-    forAll(lengthParticleWall,i)
-    {    
-        lengthParticleWall[i] = mag( site - p.liquidPositions()[i] );
-    }
-    // find the minimum length from lengthParticleWall[i]
-    // l is the number of array which the value of minLength is stored
-    scalar minLength;
-    minLength = lengthParticleWall[0];
-                
-    forAll(lengthParticleWall,i)
-    {
-        if(lengthParticleWall[i] < minLength)
-        {
-            minLength = lengthParticleWall[i];
-        }
-    }
-   //           Info << " minLength is " << minLength << endl;
-
-   //         Info << " liquidPosition is " << p.liquidPositions()[l] << endl;
-   //           Info << " The volume of this liquid bridge is "<< VliqBrid << endl;
-   //         Info << " site is " << site << endl;
-   //           Info << "cosThetaCp["<<l<<"]="<< cosThetaCp << endl;
-   //           Info << "cosTheta[l] is "<<cosTheta[l] << endl;
-    //If the closest wet point is dry, then the liquid volume will be 0
-    //so the force fN_PW and ft_PW will be 0
-    //else, the volume of the liquid bridge will be p.partVliq[l]
-
-    scalar SrupWetP = (1+0.5*ca)*pow(VliqBrid, 1./3.);
-              //Info << "rupture distance is " << SrupWetP << endl;
-    if ( minLength < SrupWetP )
-    {
-
-        if(VliqBrid==0)
-        {
-            vector zero=vector::zero;
-            vector fN_PW = zero;
-            p.f() += fN_PW;
-            vector fT_PW = zero;
-            p.torque() += fT_PW;
-     //       Info << "The volume of Vliq is 0" << endl;
-        }
-        else
-        {
-        
-            // Normal force
-            scalar capMag =
-            4*mathematical::pi*pREff*st*cos(ca)/
-            (1+max(S, 0)*sqrt(mathematical::pi*pREff/VliqBrid));
-//Info << "the value of capMag is " << capMag << endl;
- //   Info << " the value of overlapMag S is " << S << endl;
-
-            scalar Svis = max(pREff*ms, S);
-
-            scalar etaN = 6*mathematical::pi*vis*pREff*pREff/Svis;
-
-            vector fN_PW = (-capMag - etaN*(U_PW & rHat_PW)) * rHat_PW;
-
-             p.f() += fN_PW;
-
-            vector UT_PW = U_PW - (U_PW & rHat_PW)*rHat_PW
-                         - ((pREff*p.omega()) ^ rHat_PW);
-
-            scalar etaT =
-                6*mathematical::pi*vis*pREff*(8./15.*log(pREff/Svis) + 0.9588);
-
-            vector fT_PW = -etaT * UT_PW;
-
-             p.f() += fT_PW;
-
-            p.torque() += (pREff*-rHat_PW) ^ fT_PW;
-   //         Info << "-------------------------forming liquid bridge---------------" << endl;
-   //         Info << " the number of l is " << l << endl;
-   //         Info << " particle is in contact with liquidpositionvector "<<p.liquidPositionVectors()[l] << endl;
-   //         Info << " the liquid position when forming liquid bridge is " << p.liquidPositions()[l] << endl;
-  //          Info << " The volume of this liquid bridge is "<< VliqBrid << endl;
-
-        }
-    }
-    else
-    {
-        vector zero=vector::zero;
-        vector fN_PW = zero;
-        p.f() += fN_PW;
-        vector fT_PW = zero;
-        p.torque() += fT_PW;
-    //    Info << "Too far to form liquid bridge" << endl;
-    }
-}
-
-
-    //-----------------------------My part1---------------------------//
     //The closest wet point forms liquid bridge with wall
-/*
+
     // calculate the minimum length between wet point and wall
     List<scalar> lengthParticleWall(p.liquidPositionVectors().size());
 
@@ -231,7 +96,7 @@ void Foam::LambertWallDispersion<CloudType>::evaluatePendularWall
             p.f() += fN_PW;
             vector fT_PW = zero;
             p.torque() += fT_PW;
-            Info << "No particle wall contact" << endl;
+            //Info << "No particle wall contact" << endl;
         }
         else
         {
@@ -250,7 +115,8 @@ void Foam::LambertWallDispersion<CloudType>::evaluatePendularWall
 
              p.f() += fN_PW;
 
-            vector UT_PW = U_PW - (U_PW & rHat_PW)*rHat_PW;
+            vector UT_PW = U_PW - (U_PW & rHat_PW)*rHat_PW
+                          - ((pREff*p.omega()) ^ rHat_PW);
 
             scalar etaT =
                 6*mathematical::pi*vis*pREff*(8./15.*log(pREff/Svis) + 0.9588);
@@ -260,8 +126,8 @@ void Foam::LambertWallDispersion<CloudType>::evaluatePendularWall
              p.f() += fT_PW;
 
             p.torque() += (pREff*-rHat_PW) ^ fT_PW;
-            Info << " particle is in contact with vector "<<p.liquidPositionVectors()[l] << endl;
-            Info << " The volume of this liquid bridge is "<< p.partVliq()[l] << endl;
+            //Info << " particle is in contact with vector "<<p.liquidPositionVectors()[l] << endl;
+            //Info << " The volume of this liquid bridge is "<< p.partVliq()[l] << endl;
         }
     }
     else
@@ -271,10 +137,10 @@ void Foam::LambertWallDispersion<CloudType>::evaluatePendularWall
         p.f() += fN_PW;
         vector fT_PW = zero;
         p.torque() += fT_PW;
-        Info << "No particle wall contact" << endl;
+        //Info << "No particle wall contact" << endl;
     }
 
-*/
+
 
 
     //-----------------------------------------------------------------//
@@ -315,7 +181,7 @@ void Foam::LambertWallDispersion<CloudType>::evaluatePendularWall
 // * * * * * * * * * * * * * * * * Constructors  * * * * * * * * * * * * * * //
 
 template<class CloudType>
-Foam::LambertWallDispersion<CloudType>::LambertWallDispersion
+Foam::LambertWallNearestPoint<CloudType>::LambertWallNearestPoint
 (
     const dictionary& dict,
     CloudType& cloud,
@@ -349,14 +215,14 @@ Foam::LambertWallDispersion<CloudType>::LambertWallDispersion
 // * * * * * * * * * * * * * * * * Destructor  * * * * * * * * * * * * * * * //
 
 template<class CloudType>
-Foam::LambertWallDispersion<CloudType>::~LambertWallDispersion()
+Foam::LambertWallNearestPoint<CloudType>::~LambertWallNearestPoint()
 {}
 
 
 // * * * * * * * * * * * * * * * Member Functions  * * * * * * * * * * * * * //
 
 template<class CloudType>
-Foam::scalar Foam::LambertWallDispersion<CloudType>::pREff
+Foam::scalar Foam::LambertWallNearestPoint<CloudType>::pREff
 (
     const typename CloudType::parcelType& p
 ) const
@@ -372,7 +238,7 @@ Foam::scalar Foam::LambertWallDispersion<CloudType>::pREff
 }
 
 template<class CloudType>
-void Foam::LambertWallDispersion<CloudType>::evaluatePendularWall
+void Foam::LambertWallNearestPoint<CloudType>::evaluatePendularWall
 (
     typename CloudType::parcelType& p,
     const List<point>& flatSitePoints,

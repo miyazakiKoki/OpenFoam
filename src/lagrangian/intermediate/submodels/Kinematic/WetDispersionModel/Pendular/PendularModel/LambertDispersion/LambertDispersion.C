@@ -246,8 +246,6 @@ void Foam::LambertDispersion<CloudType>::evaluatePendular
                 4*mathematical::pi
                 *R*st*cos(ca);
             
-            scalar a = 1+VliqBrid/(mathematical::pi*R*S*S);
-            scalar b = 1+Vtot/(mathematical::pi*R*S*S);
 //            Info<<"inside my sqrt="<<a<<endl;
 //            Info<<"inside original sqrt="<<b<<endl;
             if(VliqBrid > 0)
