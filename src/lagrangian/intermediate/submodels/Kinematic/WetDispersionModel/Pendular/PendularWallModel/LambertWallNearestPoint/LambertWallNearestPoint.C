@@ -86,59 +86,38 @@ void Foam::LambertWallNearestPoint<CloudType>::evaluatePendularWall
     //else, the volume of the liquid bridge will be p.partVliq[l]
 
     scalar Srup = (1+0.5*ca)*pow(p.partVliq()[l], 1./3.);
-    if ( Srup < minLength )
-    {
 
-        if(p.partVliq()[l]==0)
-        {
-            vector zero=vector::zero;
-            vector fN_PW = zero;
-            p.f() += fN_PW;
-            vector fT_PW = zero;
-            p.torque() += fT_PW;
-            //Info << "No particle wall contact" << endl;
-        }
-        else
-        {
-        
-            // Normal force
-            scalar capMag =
+    if(p.partVliq()[l]!=0)
+    {
+        // Normal force
+        scalar capMag =
             4*mathematical::pi*pREff*st*cos(ca)/
             (1+max(S, 0)*sqrt(mathematical::pi*pREff/p.partVliq()[l]));
 
 
-            scalar Svis = max(pREff*ms, S);
+        scalar Svis = max(pREff*ms, S);
 
-            scalar etaN = 6*mathematical::pi*vis*pREff*pREff/Svis;
+        scalar etaN = 6*mathematical::pi*vis*pREff*pREff/Svis;
 
-            vector fN_PW = (-capMag - etaN*(U_PW & rHat_PW)) * rHat_PW;
+        vector fN_PW = (-capMag - etaN*(U_PW & rHat_PW)) * rHat_PW;
 
-             p.f() += fN_PW;
-
-            vector UT_PW = U_PW - (U_PW & rHat_PW)*rHat_PW
-                          - ((pREff*p.omega()) ^ rHat_PW);
-
-            scalar etaT =
-                6*mathematical::pi*vis*pREff*(8./15.*log(pREff/Svis) + 0.9588);
-
-            vector fT_PW = -etaT * UT_PW;
-
-             p.f() += fT_PW;
-
-            p.torque() += (pREff*-rHat_PW) ^ fT_PW;
-            //Info << " particle is in contact with vector "<<p.liquidPositionVectors()[l] << endl;
-            //Info << " The volume of this liquid bridge is "<< p.partVliq()[l] << endl;
-        }
-    }
-    else
-    {
-        vector zero=vector::zero;
-        vector fN_PW = zero;
         p.f() += fN_PW;
-        vector fT_PW = zero;
-        p.torque() += fT_PW;
-        //Info << "No particle wall contact" << endl;
+
+        vector UT_PW = U_PW - (U_PW & rHat_PW)*rHat_PW
+                      - ((pREff*p.omega()) ^ rHat_PW);
+
+        scalar etaT =
+            6*mathematical::pi*vis*pREff*(8./15.*log(pREff/Svis) + 0.9588);
+
+        vector fT_PW = -etaT * UT_PW;
+
+        p.f() += fT_PW;
+
+        p.torque() += (pREff*-rHat_PW) ^ fT_PW;
+        //Info << " particle is in contact with vector "<<p.liquidPositionVectors()[l] << endl;
+        //Info << " The volume of this liquid bridge is "<< p.partVliq()[l] << endl;
     }
+
 
 
 
