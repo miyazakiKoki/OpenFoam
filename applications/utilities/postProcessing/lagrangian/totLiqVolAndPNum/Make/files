@@ -1,0 +1,3 @@
+totLiqVolAndPNum.C
+
+EXE = $(FOAM_APPBIN)/totLiqVolAndPNum
