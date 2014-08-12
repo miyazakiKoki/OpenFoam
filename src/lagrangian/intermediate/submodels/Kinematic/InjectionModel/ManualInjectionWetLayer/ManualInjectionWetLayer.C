@@ -23,7 +23,7 @@ License
 
 \*---------------------------------------------------------------------------*/
 
-#include "ManualInjectionWet.H"
+#include "ManualInjectionWetLayer.H"
 #include "mathematicalConstants.H"
 #include "PackedBoolList.H"
 
@@ -32,7 +32,7 @@ using namespace Foam::constant::mathematical;
 // * * * * * * * * * * * * * * * * Constructors  * * * * * * * * * * * * * * //
 
 template<class CloudType>
-Foam::ManualInjectionWet<CloudType>::ManualInjectionWet
+Foam::ManualInjectionWetLayer<CloudType>::ManualInjectionWetLayer
 (
     const dictionary& dict,
     CloudType& owner,
@@ -93,6 +93,19 @@ Foam::ManualInjectionWet<CloudType>::ManualInjectionWet
         (
             this->coeffDict().lookup("maxWetVector")
         )
+    ),
+    layerAxis_
+    (
+        (
+            this->coeffDict().lookup("layerAxis")
+            )
+    ),
+    layerNum_
+    (
+        readLabel
+        (
+            this->coeffDict().lookup("layerNum")
+        )
     )
 {
     updateMesh();
@@ -109,9 +122,9 @@ Foam::ManualInjectionWet<CloudType>::ManualInjectionWet
 
 
 template<class CloudType>
-Foam::ManualInjectionWet<CloudType>::ManualInjectionWet
+Foam::ManualInjectionWetLayer<CloudType>::ManualInjectionWetLayer
 (
-    const ManualInjectionWet<CloudType>& im
+    const ManualInjectionWetLayer<CloudType>& im
 )
 :
     InjectionModel<CloudType>(im),
@@ -127,21 +140,23 @@ Foam::ManualInjectionWet<CloudType>::ManualInjectionWet
     iniVliq_(im.iniVliq_),
     iniLiquidPositions_(im.iniLiquidPositions_),
     minWet_(im.minWet_),
-    maxWet_(im.maxWet_)
+    maxWet_(im.maxWet_),
+    layerAxis_(im.layerAxis_),
+    layerNum_(im.layerNum_)
 {}
 
 
 // * * * * * * * * * * * * * * * * Destructor  * * * * * * * * * * * * * * * //
 
 template<class CloudType>
-Foam::ManualInjectionWet<CloudType>::~ManualInjectionWet()
+Foam::ManualInjectionWetLayer<CloudType>::~ManualInjectionWetLayer()
 {}
 
 
 // * * * * * * * * * * * * * * * Member Functions  * * * * * * * * * * * * * //
 
 template<class CloudType>
-void Foam::ManualInjectionWet<CloudType>::updateMesh()
+void Foam::ManualInjectionWetLayer<CloudType>::updateMesh()
 {
     label nRejected = 0;
 
@@ -181,7 +196,7 @@ void Foam::ManualInjectionWet<CloudType>::updateMesh()
 
 
 template<class CloudType>
-Foam::scalar Foam::ManualInjectionWet<CloudType>::timeEnd() const
+Foam::scalar Foam::ManualInjectionWetLayer<CloudType>::timeEnd() const
 {
     // Not used
     return this->SOI_;
@@ -189,7 +204,7 @@ Foam::scalar Foam::ManualInjectionWet<CloudType>::timeEnd() const
 
 
 template<class CloudType>
-Foam::label Foam::ManualInjectionWet<CloudType>::parcelsToInject
+Foam::label Foam::ManualInjectionWetLayer<CloudType>::parcelsToInject
 (
     const scalar time0,
     const scalar time1
@@ -207,7 +222,7 @@ Foam::label Foam::ManualInjectionWet<CloudType>::parcelsToInject
 
 
 template<class CloudType>
-Foam::scalar Foam::ManualInjectionWet<CloudType>::volumeToInject
+Foam::scalar Foam::ManualInjectionWetLayer<CloudType>::volumeToInject
 (
     const scalar time0,
     const scalar time1
@@ -226,7 +241,7 @@ Foam::scalar Foam::ManualInjectionWet<CloudType>::volumeToInject
 
 
 template<class CloudType>
-void Foam::ManualInjectionWet<CloudType>::setPositionAndCell
+void Foam::ManualInjectionWetLayer<CloudType>::setPositionAndCell
 (
     const label parcelI,
     const label,
@@ -245,7 +260,7 @@ void Foam::ManualInjectionWet<CloudType>::setPositionAndCell
 
 
 template<class CloudType>
-void Foam::ManualInjectionWet<CloudType>::setProperties
+void Foam::ManualInjectionWetLayer<CloudType>::setProperties
 (
     const label parcelI,
     const label,
@@ -291,25 +306,73 @@ void Foam::ManualInjectionWet<CloudType>::setProperties
         parcel.partVliq() = b;
     }*/
 
-if((minWet_.x()<=parcel.position().x())&&(parcel.position().x()<=maxWet_.x())&&(minWet_.y()<=parcel.position().y())&&(parcel.position().y()<=maxWet_.y())&&(minWet_.z()<=parcel.position().z())&&(parcel.position().z()<=maxWet_.z()))
-    {
-        parcel.partVliq() = a;
-    }
-    else{
-        parcel.partVliq() = b;
-    }
+
+        vector x (1,0,0);
+        vector y (0,1,0);
+        vector z (0,0,1);
+
+        //When using this class, maxWet and minWet of the layerAxis must be set exactly at the point which particles exist.
+        //If, for example the minWet.x and minWet., where set enough or too large, the only the partial of particles would be layer
+
+        if(layerAxis_ == x)
+        {
+        	label i;
+        	scalar layerLength = (maxWet_.x() - minWet_.x() )/layerNum_;
+        	for (i=1; i<=layerNum_;i++ )
+        	{
+        	    if(((minWet_.x()+layerLength*(i-1))<=parcel.position().x())&&((parcel.position().x()<=minWet_.x()+layerLength*i))&&(minWet_.y()<=parcel.position().y())&&(parcel.position().y()<=maxWet_.y())&&(minWet_.z()<=parcel.position().z())&&(parcel.position().z()<=maxWet_.z()))
+        	    {
+            	    parcel.partVliq() = a/i;
+        	    }
+        	}
+        	if (parcel.partVliq() < a/(layerNum_+1))
+        	{
+        		parcel.partVliq() = b;
+        	}
+        }else if(layerAxis_ == y)
+        {
+        	label i;
+            scalar layerLength = (maxWet_.y() - minWet_.y() )/layerNum_;
+            for (i=1; i<=layerNum_;i++ )
+            {
+        	    if((minWet_.x()<=parcel.position().x())&&(parcel.position().x()<=maxWet_.x())&&(minWet_.y()+layerLength*(i-1)<=parcel.position().y())&&(parcel.position().y()<=minWet_.y()+layerLength*i)&&(minWet_.z()<=parcel.position().z())&&(parcel.position().z()<=maxWet_.z()))
+        	    {
+        	        parcel.partVliq() = a/i;
+        	    }
+        	}
+        	if (parcel.partVliq() < a/(layerNum_+1))
+        	{
+        	    parcel.partVliq() = b;
+        	}
+        }else if(layerAxis_ == z)
+        {
+        	label i;
+            scalar layerLength = (maxWet_.z() - minWet_.z() )/layerNum_;
+            for (i=1; i<=layerNum_;i++ )
+            {
+        	    if((minWet_.x()<=parcel.position().x())&&(parcel.position().x()<=maxWet_.x())&&(minWet_.y()<=parcel.position().y())&&(parcel.position().y()<=minWet_.y())&&(minWet_.z()+layerLength*(i-1)<=parcel.position().z())&&(parcel.position().z()<=maxWet_.z()+layerLength*i))
+        	    {
+        	        parcel.partVliq() = a/i;
+        	    }
+        	}
+        	if (parcel.partVliq() < a/(layerNum_+1))
+        	{
+        	    parcel.partVliq() = b;
+        	}
+        }
+
 }
 
 
 template<class CloudType>
-bool Foam::ManualInjectionWet<CloudType>::fullyDescribed() const
+bool Foam::ManualInjectionWetLayer<CloudType>::fullyDescribed() const
 {
     return false;
 }
 
 
 template<class CloudType>
-bool Foam::ManualInjectionWet<CloudType>::validInjection(const label)
+bool Foam::ManualInjectionWetLayer<CloudType>::validInjection(const label)
 {
     return true;
 }

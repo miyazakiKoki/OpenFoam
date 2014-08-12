@@ -46,9 +46,9 @@ Foam::WetParcel<ParcelType>::WetParcel
 :
     ParcelType(mesh, is, readFields),
     Vliq_(0.0),
-    partVliq_(0),
-    liquidPositions_(),
-    liquidPositionVectors_()
+    partVliq_(),
+    liquidPositionVectors_(),
+    liquidPositions_()
 {
     if (readFields)
     {
@@ -57,9 +57,11 @@ Foam::WetParcel<ParcelType>::WetParcel
             Vliq_ = readScalar(is);
             partVliq_ = readList<scalar>(is);
             liquidPositions_ = readList<vector>(is);
+            liquidPositionVectors_ = readList<vector>(is);
         }
         else
         {
+        	/*
             is.read
             (
                 reinterpret_cast<char*>(&Vliq_),
@@ -80,6 +82,15 @@ Foam::WetParcel<ParcelType>::WetParcel
                 reinterpret_cast<char*>(&liquidPositionVectors_),
                 sizeof(liquidPositionVectors_)
             );
+            */
+        	is.read
+            (
+        	     reinterpret_cast<char*>(&Vliq_),
+        	     sizeof(Vliq_)
+        	    +sizeof(partVliq_)
+        	    +sizeof(liquidPositionVectors_)
+        	    +sizeof(liquidPositions_)
+        	 );
         }
     }
 
@@ -182,16 +193,14 @@ Foam::Ostream& Foam::operator<<
     if (os.format() == IOstream::ASCII)
     {
         os  << static_cast<const ParcelType&>(p)
-            << token::SPACE << p.Vliq();
-        os  << static_cast<const ParcelType&>(p)
-            << token::SPACE << p.partVliq();
-        os  << static_cast<const ParcelType&>(p)
-            << token::SPACE << p.liquidPositions();
-        os  << static_cast<const ParcelType&>(p)
+            << token::SPACE << p.Vliq()
+            << token::SPACE << p.partVliq()
+            << token::SPACE << p.liquidPositions()
             << token::SPACE << p.liquidPositionVectors();
     }
     else
     {
+    	/*
         os  << static_cast<const ParcelType&>(p);
         os.write
         (
@@ -214,6 +223,17 @@ Foam::Ostream& Foam::operator<<
             reinterpret_cast<const char*>(&p.liquidPositionVectors_),
             sizeof(p.liquidPositionVectors())
         );
+        */
+
+    	os  << static_cast<const ParcelType&>(p);
+    	os.write
+    	(
+    	    reinterpret_cast<const char*>(&p.Vliq_),
+    	    sizeof(p.Vliq())
+    	  + sizeof(p.partVliq())
+    	  + sizeof(p.liquidPositionVectors())
+          + sizeof(p.liquidPositions())
+    	);
     }
 
     // Check state of Ostream

@@ -37,7 +37,7 @@ inline Foam::WetParcel<ParcelType>::WetParcel
 :
     ParcelType(owner, position, cellI, tetFaceI, tetPtI),
     Vliq_(0.0),
-    partVliq_(0),
+    partVliq_(),
     liquidPositionVectors_(),
     liquidPositions_()
 {}

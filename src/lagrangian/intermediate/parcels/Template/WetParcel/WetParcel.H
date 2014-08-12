@@ -90,9 +90,9 @@ public:
         (
             ParcelType,
             " Vliq"
-          + "partVliq"
-          + " liquidPositions"
+          + " partVliq"
           + " liquidPositionVectors"
+          + " liquidPositions"
         );
 
 public:

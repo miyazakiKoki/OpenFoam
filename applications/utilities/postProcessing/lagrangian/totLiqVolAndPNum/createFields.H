@@ -2,7 +2,7 @@ IOdictionary propsDict
 (
     IOobject
     (
-        "totLiqVolProperties",
+        "totLiqVolAndPNumProperties",
         runTime.constant(),
         mesh,
         IOobject::MUST_READ_IF_MODIFIED

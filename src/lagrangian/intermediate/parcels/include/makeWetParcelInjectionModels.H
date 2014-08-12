@@ -29,12 +29,15 @@ License
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
 
 #include "ManualInjectionWet.H"
+#include "ManualInjectionWetLayer.H"
+
 
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
 
 #define makeWetParcelInjectionModels(CloudType)                               \
                                                                               \
-    makeInjectionModelType(ManualInjectionWet, CloudType);
+    makeInjectionModelType(ManualInjectionWet, CloudType);                    \
+    makeInjectionModelType(ManualInjectionWetLayer, CloudType);
 
 
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //

@@ -1,3 +1,0 @@
-totLiqVol.C
-
-EXE = $(FOAM_APPBIN)/totLiqVol

@@ -172,6 +172,17 @@ int main(int argc, char *argv[])
                      
         }
 
+    fileName rootName5(runTime.path());
+    fileName fName5("totParticleWeightDropped");
+    OFstream os5(rootName5/fName5);
+    Info<< "Writing to the output file"<<endl;
+
+        forAll(timeDirs, i)
+        {
+            os4<<timeDirs[i]<<","<<DropPWeight<<endl;
+                     
+        }
+
     
         
 
