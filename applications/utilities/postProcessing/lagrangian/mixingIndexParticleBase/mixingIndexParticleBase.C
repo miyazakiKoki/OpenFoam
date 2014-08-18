@@ -83,7 +83,7 @@ int main(int argc, char *argv[])
         runTime.setTime(timeDirs[timeI], timeI);
         Info<< "Time = " << runTime.timeName() << endl;
         
-        if(timeI >= 1)
+        if(timeI > 1)
         {
             Info<< "    Reading particle positions" << endl;
             //passiveParticleCloud myCloud(mesh, cloudName);
@@ -114,16 +114,7 @@ int main(int argc, char *argv[])
                 S[timeI] += pow((iter().Vliq()-Vave[timeI]),2);
             }
 
-        }
-    }
-
-    forAll(timeDirs, timeI)
-    {
-
-        runTime.setTime(timeDirs[timeI], timeI);
-        Info<< "Time = " << runTime.timeName() << endl;
-        
-        if(timeI == 1)
+        }else if(timeI == 1)
         {
             Info<< "    Reading particle positions" << endl;
             //passiveParticleCloud myCloud(mesh, cloudName);
@@ -176,7 +167,12 @@ int main(int argc, char *argv[])
                 }
                 k+=1;
             }
-
+            //calculating S[1]
+            forAllConstIter(basicWetCollidingCloud, myCloud, iter)
+            {
+                S[timeI] += pow((iter().Vliq()-Vave[timeI]),2);
+            }
+            //calculating S[0]
             forAll(dummyVliq,k)
             {
                 S0 += pow((dummyVliq[k]-Vave[timeI]),2);
