@@ -103,65 +103,67 @@ void Foam::LambertDispersionNearestPoint<CloudType>::evaluatePendular
 
         scalar S = -normalOverlapMag;
 
-        scalar Srup = (1+0.5*ca)*pow(Vtot, 1./3.);
+
+        // calculating the middle point between particle A and B
+        vector middlePointAB;
+        middlePointAB = ( pA.position() + pB.position() )/2;
+        // calculate the minimum length between middle point and liquidPositions of particle A
+        List<scalar> lengthMidPointLiqPosA(pA.liquidPositions().size());
+
+        forAll(lengthMidPointLiqPosA,i)
+        {
+            lengthMidPointLiqPosA[i] = mag( middlePointAB - pA.liquidPositions()[i] );
+        }
+
+        // find the minimum length from lengthMidPointLiqPosA[i]
+        // lA is the number of array which the value of minLengthA is stored
+        scalar minLengthA;
+        minLengthA = lengthMidPointLiqPosA[0];
+        scalar lA=0;
+
+        forAll(lengthMidPointLiqPosA,i)
+        {
+            if(lengthMidPointLiqPosA[i] < minLengthA)
+            {
+                minLengthA = lengthMidPointLiqPosA[i];
+                lA = i;
+            }
+        }
+
+
+        // calculate the minimum length between middle point and liquidPositions of particle B
+        List<scalar> lengthMidPointLiqPosB(pB.liquidPositions().size());
+
+        forAll(lengthMidPointLiqPosB,i)
+        {
+            lengthMidPointLiqPosB[i] = mag( middlePointAB - pB.liquidPositions()[i] );
+        }
+
+        // find the minimum length from lengthMidPointLiqPosB[i]
+        // lB is the number of array which the value of minLengthB is stored
+        scalar minLengthB;
+        minLengthB = lengthMidPointLiqPosB[0];
+        scalar lB=0;
+
+        forAll(lengthMidPointLiqPosB,i)
+        {
+            if(lengthMidPointLiqPosB[i] < minLengthB)
+            {
+                minLengthB = lengthMidPointLiqPosB[i];
+                lB = i;
+            }
+        }
+
+        scalar VliqBrid;
+        VliqBrid = pA.partVliq()[lA]+pB.partVliq()[lB];
+
+
+        scalar Srup = (1+0.5*ca)*pow(VliqBrid, 1./3.);
 
 
 
         if (S < Srup)
         {
-
-            // calculating the middle point between particle A and B
-            vector middlePointAB;
-            middlePointAB = ( pA.position() + pB.position() )/2;
-            // calculate the minimum length between middle point and liquidPositions of particle A
-            List<scalar> lengthMidPointLiqPosA(pA.liquidPositions().size());
-
-            forAll(lengthMidPointLiqPosA,i)
-            {
-                lengthMidPointLiqPosA[i] = mag( middlePointAB - pA.liquidPositions()[i] );
-            }
-
-            // find the minimum length from lengthMidPointLiqPosA[i]
-            // lA is the number of array which the value of minLengthA is stored
-            scalar minLengthA;
-            minLengthA = lengthMidPointLiqPosA[0];
-            scalar lA=0;
-
-            forAll(lengthMidPointLiqPosA,i)
-            {
-                if(lengthMidPointLiqPosA[i] < minLengthA)
-                {
-                    minLengthA = lengthMidPointLiqPosA[i];
-                    lA = i;
-                }
-            }
-
-
-            // calculate the minimum length between middle point and liquidPositions of particle B
-            List<scalar> lengthMidPointLiqPosB(pB.liquidPositions().size());
-
-            forAll(lengthMidPointLiqPosB,i)
-            {
-                lengthMidPointLiqPosB[i] = mag( middlePointAB - pB.liquidPositions()[i] );
-            }
-
-            // find the minimum length from lengthMidPointLiqPosB[i]
-            // lB is the number of array which the value of minLengthB is stored
-            scalar minLengthB;
-            minLengthB = lengthMidPointLiqPosB[0];
-            scalar lB=0;
-
-            forAll(lengthMidPointLiqPosB,i)
-            {
-                if(lengthMidPointLiqPosB[i] < minLengthB)
-        	{
-        	        minLengthB = lengthMidPointLiqPosB[i];
-        	        lB = i;
-                }
-             }
-
-            scalar VliqBrid;
-            VliqBrid = pA.partVliq()[lA]+pB.partVliq()[lB];
 
             vector rHat_AB = r_AB/(r_AB_mag + VSMALL);
 
