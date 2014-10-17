@@ -1,0 +1,34 @@
+/*--------------------------------*- C++ -*----------------------------------*\
+| =========                 |                                                 |
+| \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox           |
+|  \\    /   O peration     | Version:  2.2.0                                 |
+|   \\  /    A nd           | Web:      www.OpenFOAM.org                      |
+|    \\/     M anipulation  |                                                 |
+\*---------------------------------------------------------------------------*/
+FoamFile
+{
+    version     2.0;
+    format      ascii;
+    class       dictionary;
+    location    "system";
+    object      setParticlePositionsDict;
+}
+// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
+
+positioningType        random;  //random
+
+
+// ****** subDict ****** //
+randomSubDict
+{
+    wetPointNumber	  60;
+    particleRadius        0.003;
+    minEdgeLength         0.00001;
+    thetaDensity          2;   // theta is originally value between 0 and 180deg. Since random function can only take integer, thetaDensity were introduced to subdivide this
+    phiDensity            2;   // phi is originally value between 0 and 360deg. phiDensity can take any value. when it is 2, then random value of phi can take 0, 0.5, 1.5 ... and so has 720 choices 
+    trialNumber          10000;
+
+}
+
+
+// ************************************************************************* //
