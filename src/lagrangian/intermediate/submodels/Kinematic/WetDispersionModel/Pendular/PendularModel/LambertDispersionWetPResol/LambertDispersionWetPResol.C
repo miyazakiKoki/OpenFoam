@@ -252,7 +252,7 @@ void Foam::LambertDispersionWetPResol<CloudType>::evaluatePendular
                         num += 1;
                     }
                 }
-                Info<<"number of liquid wet regions used to form liquid bridge is "<< num << endl;
+
                 //distribute to each divided surfaces equally
                 forAll(dummyListA,i)
                 {
