@@ -6,14 +6,6 @@ CLOUDS=clouds
 BASECLOUDS=$(CLOUDS)/baseClasses
 DERIVEDCLOUDS=$(CLOUDS)/derived
 
-TEMPLATEKINEMATICCOLLIDINGPARCEL=$(DERIVEDPARCELS)/templateKinematicCollidingParcel
-$(TEMPLATEKINEMATICCOLLIDINGPARCEL)/defineTemplateKinematicCollidingParcel.C
-$(TEMPLATEKINEMATICCOLLIDINGPARCEL)/makeTemplateKinematicCollidingParcelSubmodels.C
-
-MESOSCALECOUPLINGPARCEL=$(DERIVEDPARCELS)/basicMesoScaleCouplingParcel
-$(MESOSCALECOUPLINGPARCEL)/defineBasicMesoScaleCouplingParcel.C
-$(MESOSCALECOUPLINGPARCEL)/makeBasicMesoScaleCouplingParcelSubmodels.C
-
 WETCOLLIDINGPARCEL=$(DERIVEDPARCELS)/basicWetCollidingParcel
 $(WETCOLLIDINGPARCEL)/defineBasicWetCollidingParcel.C
 $(WETCOLLIDINGPARCEL)/makeBasicWetCollidingParcelSubmodels.C

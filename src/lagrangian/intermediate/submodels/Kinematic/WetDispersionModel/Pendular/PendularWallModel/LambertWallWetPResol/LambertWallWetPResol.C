@@ -42,7 +42,7 @@ void Foam::LambertWallWetPResol<CloudType>::evaluatePendularWall
     const scalar& vis = this->viscosity();
     const scalar& ms = this->minSep();
 
-    scalar Vtot = lf*(p.Vliq());
+    //scalar Vtot = lf*(p.Vliq());
 
     vector r_PW = p.position() - site;
 
@@ -96,7 +96,7 @@ void Foam::LambertWallWetPResol<CloudType>::evaluatePendularWall
         }
     }
 
-    scalar Srup = (1+0.5*ca)*pow(VliqBrid, 1./3.);
+    //scalar Srup = (1+0.5*ca)*pow(VliqBrid, 1./3.);
 
     if(VliqBrid!=0)
     {

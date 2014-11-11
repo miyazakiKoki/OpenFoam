@@ -32,6 +32,7 @@ License
 #include "VoidFractionSubDivision.H"
 #include "VoidFractionDivided.H"
 #include "CellAverageParticleVelocity.H"
+#include "WetRegion.H"
 
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
 
@@ -40,7 +41,8 @@ License
     makeCloudFunctionObjectType(VoidFractionNumber, CloudType);               \
     makeCloudFunctionObjectType(VoidFractionSubDivision, CloudType);          \
     makeCloudFunctionObjectType(VoidFractionDivided, CloudType);              \
-    makeCloudFunctionObjectType(CellAverageParticleVelocity, CloudType);
+    makeCloudFunctionObjectType(CellAverageParticleVelocity, CloudType);      \
+    makeCloudFunctionObjectType(WetRegion, CloudType);
 
 
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
