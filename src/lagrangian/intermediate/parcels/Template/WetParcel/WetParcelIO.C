@@ -48,7 +48,9 @@ Foam::WetParcel<ParcelType>::WetParcel
     Vliq_(0.0),
     partVliq_(),
     liquidPositionVectors_(),
-    liquidPositions_()
+    liquidPositions_(),
+    contactList_(),
+    previousContactList_()
 {
     if (readFields)
     {
@@ -58,6 +60,8 @@ Foam::WetParcel<ParcelType>::WetParcel
             partVliq_ = readList<scalar>(is);
             liquidPositions_ = readList<vector>(is);
             liquidPositionVectors_ = readList<vector>(is);
+            contactList_ = readList<label>(is);
+            previousContactList_ = readList<label>(is);
         }
         else
         {
@@ -90,6 +94,8 @@ Foam::WetParcel<ParcelType>::WetParcel
         	    +sizeof(partVliq_)
         	    +sizeof(liquidPositionVectors_)
         	    +sizeof(liquidPositions_)
+        	    +sizeof(contactList_)
+        	    +sizeof(previousContactList_)
         	 );
         }
     }
@@ -126,6 +132,12 @@ void Foam::WetParcel<ParcelType>::readFields(CloudType& c)
     IOField<vectorField>  liquidPositionVectors(c.fieldIOobject("liquidPositionVectors", IOobject::MUST_READ));
     c.checkFieldIOobject(c, liquidPositionVectors);
 
+    IOField<labelField>  contactList(c.fieldIOobject("contactList", IOobject::MUST_READ));
+    c.checkFieldIOobject(c, contactList);
+
+    IOField<labelField>  previousContactList(c.fieldIOobject("previousContactList", IOobject::MUST_READ));
+    c.checkFieldIOobject(c, previousContactList);
+
 
     label i = 0;
 
@@ -137,6 +149,8 @@ void Foam::WetParcel<ParcelType>::readFields(CloudType& c)
         p.partVliq_ = partVliq[i];
         p.liquidPositions_ = liquidPositions[i];
         p.liquidPositionVectors_ = liquidPositionVectors[i];
+        p.contactList_ = contactList[i];
+        p.previousContactList_ = previousContactList[i];
 
         i++;
     }
@@ -156,6 +170,8 @@ void Foam::WetParcel<ParcelType>::writeFields(const CloudType& c)
     IOField<scalarField>  partVliq(c.fieldIOobject("partVliq", IOobject::NO_READ), np);
     IOField<vectorField>  liquidPositions(c.fieldIOobject("liquidPositions", IOobject::NO_READ), np);
     IOField<vectorField>  liquidPositionVectors(c.fieldIOobject("liquidPositionVectors", IOobject::NO_READ), np);
+    IOField<labelField>  contactList(c.fieldIOobject("contactList", IOobject::NO_READ), np);
+    IOField<labelField>  previousContactList(c.fieldIOobject("previousContactList", IOobject::NO_READ), np);
 
     label i = 0;
 
@@ -167,6 +183,8 @@ void Foam::WetParcel<ParcelType>::writeFields(const CloudType& c)
         partVliq[i] = p.partVliq();
         liquidPositions[i] = p.liquidPositions();
         liquidPositionVectors[i] = p.liquidPositionVectors();
+        contactList[i] = p.contactList();
+        previousContactList[i] = p.previousContactList();
 
 
 
@@ -177,6 +195,8 @@ void Foam::WetParcel<ParcelType>::writeFields(const CloudType& c)
     partVliq.write();
     liquidPositions.write();
     liquidPositionVectors.write();
+    contactList.write();
+    previousContactList.write();
 
 }
 
@@ -196,7 +216,9 @@ Foam::Ostream& Foam::operator<<
             << token::SPACE << p.Vliq()
             << token::SPACE << p.partVliq()
             << token::SPACE << p.liquidPositions()
-            << token::SPACE << p.liquidPositionVectors();
+            << token::SPACE << p.liquidPositionVectors()
+            << token::SPACE << p.contactList()
+            << token::SPACE << p.previousContactList();
     }
     else
     {
@@ -233,6 +255,8 @@ Foam::Ostream& Foam::operator<<
     	  + sizeof(p.partVliq())
     	  + sizeof(p.liquidPositionVectors())
           + sizeof(p.liquidPositions())
+          + sizeof(p.contactList())
+          + sizeof(p.previousContactList())
     	);
     }
 

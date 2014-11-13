@@ -39,7 +39,9 @@ inline Foam::WetParcel<ParcelType>::WetParcel
     Vliq_(0.0),
     partVliq_(),
     liquidPositionVectors_(),
-    liquidPositions_()
+    liquidPositions_(),
+    contactList_(),
+    previousContactList_()
 {}
 
 
@@ -63,7 +65,9 @@ inline Foam::WetParcel<ParcelType>::WetParcel
     const scalar Vliq,
     const List<scalar> partVliq,
     const List<vector> liquidPositionVectors,
-    const List<vector> liquidPositions
+    const List<vector> liquidPositions,
+    const List<label> contactList,
+    const List<label> previousContactList
 )
 :
     ParcelType
@@ -86,7 +90,9 @@ inline Foam::WetParcel<ParcelType>::WetParcel
     Vliq_(Vliq),
     partVliq_(partVliq),
     liquidPositionVectors_(liquidPositionVectors),
-    liquidPositions_(liquidPositions)
+    liquidPositions_(liquidPositions),
+    contactList_(contactList),
+    previousContactList_(previousContactList)
 {}
 
 // * * * * * * * WetParcel Member Functions  * * * * * * * //
@@ -138,6 +144,30 @@ template<class ParcelType>
 inline Foam::List<Foam::vector>& Foam::WetParcel<ParcelType>::liquidPositionVectors()
 {
     return liquidPositionVectors_;
+}
+
+template<class ParcelType>
+inline Foam::List<Foam::label> Foam::WetParcel<ParcelType>::contactList() const
+{
+    return contactList_;
+}
+
+template<class ParcelType>
+inline Foam::List<Foam::label>& Foam::WetParcel<ParcelType>::contactList()
+{
+    return contactList_;
+}
+
+template<class ParcelType>
+inline Foam::List<Foam::label> Foam::WetParcel<ParcelType>::previousContactList() const
+{
+    return previousContactList_;
+}
+
+template<class ParcelType>
+inline Foam::List<Foam::label>& Foam::WetParcel<ParcelType>::previousContactList()
+{
+    return previousContactList_;
 }
 
 // ************************************************************************* //

@@ -38,7 +38,9 @@ Foam::WetParcel<ParcelType>::WetParcel
     Vliq_(p.Vliq_),
     partVliq_(p.partVliq_),
     liquidPositionVectors_(p.liquidPositionVectors_),
-    liquidPositions_(p.liquidPositions_)
+    liquidPositions_(p.liquidPositions_),
+    contactList_(p.contactList_),
+    previousContactList_(p.previousContactList_)
 {}
 
 
@@ -53,7 +55,9 @@ Foam::WetParcel<ParcelType>::WetParcel
     Vliq_(p.Vliq_),
     partVliq_(p.partVliq_),
     liquidPositionVectors_(p.liquidPositionVectors_),
-    liquidPositions_(p.liquidPositions_)
+    liquidPositions_(p.liquidPositions_),
+    contactList_(p.contactList_),
+    previousContactList_(p.previousContactList_)
 {}
 
 
@@ -170,6 +174,19 @@ bool Foam::WetParcel<ParcelType>::move
             
                        }
                    }
+
+                   //copying contactList to previousContactList
+                   p.previousContactList().clear();
+                   //Info<<"size of contactList of particle p before copying to previousContactList of particle" << p.origId() << "is"<< p.contactList().size()<<endl;
+                   p.previousContactList().setSize(p.contactList().size());
+                   p.previousContactList() = p.contactList();
+                   //forAll(p.previousContactList_,i)
+                   //{
+                   //	Info<<"previousContactList of this particle is "<< p.previousContactList()<<endl;
+                   // }
+                   p.contactList().clear();
+                   //Info << "contactList of particle " << p.origId() << "is cleared"<<endl;
+
 /*-----------------------*/
                 }
 
@@ -218,6 +235,8 @@ bool Foam::WetParcel<ParcelType>::move
     {
         p.Vliq()+=p.partVliq()[i];
     }
+
+
 
 
 

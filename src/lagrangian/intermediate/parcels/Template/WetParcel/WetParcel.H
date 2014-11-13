@@ -78,6 +78,12 @@ protected:
         List<vector> liquidPositions_;
         List<vector> liquidPositionVectors_;
 
+        //List of particles that are in contact with
+        List<label> contactList_;
+
+        //List of particle that were in contact with in the previous time step
+        List<label> previousContactList_;
+
 public:
 
     // Static data members
@@ -93,6 +99,8 @@ public:
           + " partVliq"
           + " liquidPositionVectors"
           + " liquidPositions"
+          + " contactList"
+          + " previousContactList"
         );
 
 public:
@@ -129,7 +137,9 @@ public:
             const scalar Vliq,
             const List<scalar> partVliq,
             const List<vector> liquidPositionVectors,
-            const List<vector> liquidPositions
+            const List<vector> liquidPositions,
+            const List<label> contactList,
+            const List<label> previousContactList
         );
 
         //- Construct from Istream
@@ -194,6 +204,10 @@ public:
 
             inline List<vector> liquidPositions() const;
 
+            inline List<label> contactList() const;
+
+            inline List<label> previousContactList() const;
+
 
         // Edit
 
@@ -205,6 +219,10 @@ public:
             inline List<vector>& liquidPositionVectors();
 
             inline List<vector>& liquidPositions();
+
+            inline List<label>& contactList();
+
+            inline List<label>& previousContactList();
 
         // Tracking
 

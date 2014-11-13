@@ -38,6 +38,7 @@ License
 #include "LambertDispersionNearestPoint.H"
 #include "LambertDispersionNearestPointLBConst.H"
 #include "LambertDispersionWetPResol.H"
+#include "LambertDispersionUniformHisterisis.H"
 
 #include "NoPendularWall.H"
 #include "LambertWall.H"
@@ -61,6 +62,7 @@ License
     makePendularModelType(LambertDispersionNearestPoint, CloudType);          \
     makePendularModelType(LambertDispersionNearestPointLBConst, CloudType);   \
     makePendularModelType(LambertDispersionWetPResol, CloudType);             \
+    makePendularModelType(LambertDispersionUniformHisterisis, CloudType);     \
                                                                               \
     makePendularWallModel(CloudType);                                         \
     makePendularWallModelType(NoPendularWall, CloudType);                     \
