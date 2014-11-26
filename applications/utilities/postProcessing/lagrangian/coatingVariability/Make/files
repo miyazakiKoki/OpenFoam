@@ -1,0 +1,3 @@
+coatingVariability.C
+
+EXE = $(FOAM_APPBIN)/coatingVariability

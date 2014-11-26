@@ -1,0 +1,43 @@
+EXE_INC = \
+    -I$(LIB_SRC)/finiteVolume/lnInclude \
+    -I$(LIB_SRC)/meshTools/lnInclude \
+    -I$(LIB_SRC)/fileFormats/lnInclude \
+    -I$(LIB_SRC)/lagrangian/basic/lnInclude \
+    -I$(LIB_SRC)/transportModels \
+    -I$(LIB_SRC)/transportModels/incompressible/lnInclude \
+    -I$(LIB_SRC)/turbulenceModels/incompressible/turbulenceModel \
+    -I$(LIB_SRC)/lagrangian/intermediate/lnInclude \
+    -I$(LIB_SRC)/regionModels/surfaceFilmModels/lnInclude \
+    -I$(LIB_SRC)/regionModels/regionModel/lnInclude \
+    -I$(LIB_SRC)/thermophysicalModels/specie/lnInclude \
+    -I$(LIB_SRC)/thermophysicalModels/basic/lnInclude \
+    -I$(LIB_SRC)/thermophysicalModels/reactionThermo/lnInclude \
+    -I$(LIB_SRC)/thermophysicalModels/radiationModels/lnInclude \
+    -I$(LIB_SRC)/lagrangian/basic/lnInclude \
+    -I$(WM_PROJECT_USER_DIR)/src/lagrangian/intermediate/lnInclude
+
+
+
+
+
+EXE_LIBS = \
+    -L$(FOAM_USER_LIBBIN) \
+    -lfiniteVolume \
+    -lmeshTools \
+    -lfileFormats \
+    -lgenericPatchFields \
+    -llagrangian \
+    -lincompressibleTransportModels \
+    -lincompressibleRASModels \
+    -lincompressibleLESModels \
+    -llagrangianIntermediate \
+    -lsurfaceFilmModels \
+    -lthermophysicalFunctions \
+    -lfluidThermophysicalModels \
+    -lspecie \
+    -lradiationModels \
+    -llagrangianIntermediate \
+    -luserLagrangianIntermediate
+
+
+

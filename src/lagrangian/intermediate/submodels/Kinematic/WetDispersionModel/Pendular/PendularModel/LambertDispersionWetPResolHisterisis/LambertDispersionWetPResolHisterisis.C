@@ -242,7 +242,7 @@ void Foam::LambertDispersionWetPResolHisterisis<CloudType>::evaluatePendular
                 //    Info << "the contactList of particle " << pA.origId() << " is " << pA.contactList()[i]<< endl ;
                 //}
 
-                Info<<"Forming liquid bridge"<<endl;
+                //Info<<"Forming liquid bridge"<<endl;
             }
 
 
@@ -292,7 +292,7 @@ void Foam::LambertDispersionWetPResolHisterisis<CloudType>::evaluatePendular
                                 pB.partVliq()[i] = VliqBrid / num;
                             }
                         }
-                        Info<<"distributing the liquid "<< endl;
+                       // Info<<"distributing the liquid "<< endl;
 
                     }
     		    }
